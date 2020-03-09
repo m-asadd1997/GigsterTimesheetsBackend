@@ -51,7 +51,7 @@ public class AuthenticationController {
         if(user!=null){
             final String token = jwtTokenUtil.generateToken(user);
 
-            return new ApiResponse<>(200, "success",new AuthToken(token,user.getName(),user.getUserType(),user.getEmail()));
+            return new ApiResponse<>(200, "success",new AuthToken(user.getId(),token,user.getName(),user.getUserType(),user.getEmail(),user.getOrganizationName()));
         }
 
       return new ApiResponse<>(404, "RECORD NOT FOUND",new AuthToken("","","",""));
@@ -61,7 +61,7 @@ public class AuthenticationController {
     @PostMapping("/user")
     public ApiResponse<User> saveUser(@RequestBody UserDto user){
 
-        return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",userService.save(user));
+        return userService.save(user);
     }
 
     @RequestMapping(value = "/getusers", method = RequestMethod.GET)
@@ -101,4 +101,16 @@ public class AuthenticationController {
     public ApiResponse<Register> saveRegister(@RequestBody RegisterDTO registerDTO){
         return registerService.saveRegistration(registerDTO);
     }
+
+    @GetMapping("/{organizationName}")
+    public ApiResponse<User> getSupervisors(@PathVariable("organizationName") String organizationName){
+        return userService.getSupervisorsByOrganizationName(organizationName);
+    }
+
+    @GetMapping("/user/{email}")
+    public User getUserByEmail(@PathVariable("email") String email){
+        return userService.findOne(email);
+    }
+
+
 }
