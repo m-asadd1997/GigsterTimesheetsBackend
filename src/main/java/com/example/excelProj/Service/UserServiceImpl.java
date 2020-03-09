@@ -84,10 +84,10 @@ public class UserServiceImpl implements UserDetailsService {
 			User newUser = new User();
 			newUser.setEmail(user.getEmail());
 			newUser.setName(user.getName());
-			newUser.setClientId(user.getClientId());
+			newUser.setOrganizationName(user.getOrganizationName());
 			newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
 			newUser.setUserType(user.getUserType());
-			newUser.setActive(user.getActive());
+			newUser.setActive(true);
 			return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
 		}else{
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User Already exsist.",null);//return ;
@@ -107,6 +107,10 @@ public class UserServiceImpl implements UserDetailsService {
  		}
 
 		return null;
+	}
+
+	public ApiResponse getSupervisorsByOrganizationName(String organizationName){
+		return new ApiResponse<>(HttpStatus.OK.value(), "Supervisor Found successfully.",userDaoRepository.getSupervisorsByOrganizationName(organizationName));
 	}
 
 

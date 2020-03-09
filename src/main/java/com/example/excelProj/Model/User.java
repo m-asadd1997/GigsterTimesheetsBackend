@@ -1,6 +1,9 @@
 package com.example.excelProj.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -21,38 +24,27 @@ public class User {
     
     @Column
     private String userType;
-    
+
     @Column
-    private Long clientId;
+	private String organizationName;
+//    @Column
+//    private Long clientId;
 
-    
-   
+	@OneToMany(mappedBy = "user")
+	@JsonIgnore
+	List<Timesheets> timesheets;
 
-    public Long getId() {
+	@OneToMany(mappedBy = "supervisor")
+	@JsonIgnore
+	List<Timesheets> timesheetsForSupervisor;
+
+
+	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-
-
-
-	public String getUserType() {
-		return userType;
-	}
-
-	public void setUserType(String userType) {
-		this.userType = userType;
 	}
 
 	public String getEmail() {
@@ -71,21 +63,51 @@ public class User {
 		this.name = name;
 	}
 
-	public Boolean isActive() {
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Boolean getActive() {
 		return active;
 	}
 
-	public void setActive(Boolean isActive) {
-		this.active = isActive;
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
-	public Long getClientId() {
-		return clientId;
+	public String getUserType() {
+		return userType;
 	}
 
-	public void setClientId(Long clientId) {
-		this.clientId = clientId;
+	public void setUserType(String userType) {
+		this.userType = userType;
 	}
-	
-    
+
+	public String getOrganizationName() {
+		return organizationName;
+	}
+
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
+	}
+
+	public List<Timesheets> getTimesheets() {
+		return timesheets;
+	}
+
+	public void setTimesheets(List<Timesheets> timesheets) {
+		this.timesheets = timesheets;
+	}
+
+	public List<Timesheets> getTimesheetsForSupervisor() {
+		return timesheetsForSupervisor;
+	}
+
+	public void setTimesheetsForSupervisor(List<Timesheets> timesheetsForSupervisor) {
+		this.timesheetsForSupervisor = timesheetsForSupervisor;
+	}
 }

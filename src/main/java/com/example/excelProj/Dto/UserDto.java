@@ -7,18 +7,20 @@ public class UserDto {
     private String password;
     private Boolean active ;
     private String userType;
-    private Long clientId;
+    private String organizationName;
+//    private Long clientId;
 
-	public UserDto(String name, String email, String password, Boolean active, String userType, Long clientId) {
+
+	public UserDto() {
+	}
+
+	public UserDto(String name, String email, String password, Boolean active, String userType, String organizationName) {
 		this.name = name;
 		this.email = email;
 		this.password = password;
 		this.active = active;
 		this.userType = userType;
-		this.clientId = clientId;
-	}
-
-	public UserDto() {
+		this.organizationName = organizationName;
 	}
 
 	public String getName() {
@@ -45,7 +47,6 @@ public class UserDto {
 		this.password = password;
 	}
 
-
 	public Boolean getActive() {
 		return active;
 	}
@@ -62,11 +63,11 @@ public class UserDto {
 		this.userType = userType;
 	}
 
-	public Long getClientId() {
-		return clientId;
+	public String getOrganizationName() {
+		return organizationName;
 	}
 
-	public void setClientId(Long clientId) {
-		this.clientId = clientId;
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
 	}
 }
