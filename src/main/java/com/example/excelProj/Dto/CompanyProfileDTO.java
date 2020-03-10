@@ -9,6 +9,7 @@ public class CompanyProfileDTO {
     private String contactTitle;
     private String roles;
     private String startingDayOfWeek;
+    private byte[] companyimage;
 
     public CompanyProfileDTO() {
     }
@@ -67,5 +68,13 @@ public class CompanyProfileDTO {
 
     public void setStartingDayOfWeek(String startingDayOfWeek) {
         this.startingDayOfWeek = startingDayOfWeek;
+    }
+
+    public byte[] getCompanyimage() {
+        return companyimage;
+    }
+
+    public void setCompanyimage(byte[] companyimage) {
+        this.companyimage = companyimage;
     }
 }
