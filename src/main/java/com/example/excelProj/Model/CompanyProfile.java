@@ -1,9 +1,6 @@
 package com.example.excelProj.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class CompanyProfile {
@@ -18,6 +15,10 @@ public class CompanyProfile {
     private String roles;
     private String startingDayOfWeek;
 
+    @Lob
+    @Column(name = "company_image")
+    private byte[] companyimage;
+
     public CompanyProfile() {
     }
 
@@ -28,6 +29,14 @@ public class CompanyProfile {
         this.billingAddress = billingAddress;
         this.contactName = contactName;
         this.contactTitle = contactTitle;
+    }
+
+    public byte[] getCompanyimage() {
+        return companyimage;
+    }
+
+    public void setCompanyimage(byte[] companyimage) {
+        this.companyimage = companyimage;
     }
 
     public Long getId() {

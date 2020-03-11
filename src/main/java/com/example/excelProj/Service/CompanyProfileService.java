@@ -23,6 +23,7 @@ public class CompanyProfileService {
         companyProfile.setCorporateAddress(companyProfileDTO.getCorporateAddress());
         companyProfile.setRoles(companyProfileDTO.getRoles());
         companyProfile.setStartingDayOfWeek(companyProfileDTO.getStartingDayOfWeek());
+        companyProfile.setCompanyimage(companyProfileDTO.getCompanyimage());
 
         return new ApiResponse<>(HttpStatus.OK.value(), "Company Profile saved successfully.",companyProfileRepository.save(companyProfile));
 
