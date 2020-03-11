@@ -29,6 +29,7 @@ public class Timesheets {
     private String organizationName;
     private String status;
     private String modifiedBy;
+    private String dateSubmitted;
 
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
@@ -208,5 +209,13 @@ public class Timesheets {
 
     public void setSupervisor(User supervisor) {
         this.supervisor = supervisor;
+    }
+
+    public String getDateSubmitted() {
+        return dateSubmitted;
+    }
+
+    public void setDateSubmitted(String dateSubmitted) {
+        this.dateSubmitted = dateSubmitted;
     }
 }

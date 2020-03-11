@@ -35,8 +35,45 @@ public class ApplicationFormService {
     @Autowired
     private JavaMailSender javaMailSender;
 
+    @Autowired
+    UserDaoRepository userDaoRepository;
+
+
+
     public ApplicantForm save(ApplicantForm applicantForm) {
-        return applicationFormRepository.save(applicantForm);
+        User user = userDaoRepository.findByEmail(applicantForm.getCheckEmail());
+
+        ApplicantForm applicantForm1 = applicationFormRepository.getApplicantFormByEmail(applicantForm.getCheckEmail());
+        if (applicantForm1 == null){
+            user.setUserImage(applicantForm.getUserImage());
+            userDaoRepository.save(user);
+            return applicationFormRepository.save(applicantForm);
+        }
+        else{
+            applicantForm1.setUserImage(applicantForm.getUserImage());
+            applicantForm1.setAddress(applicantForm.getAddress());
+            applicantForm1.setCitizenship(applicantForm.getCitizenship());
+            applicantForm1.setDateOfBirth(applicantForm.getDateOfBirth());
+            applicantForm1.setPlaceOfBirth(applicantForm.getPlaceOfBirth());
+            applicantForm1.setEmail(applicantForm.getEmail());
+            applicantForm1.setEmployeeApplication(applicantForm.getEmployeeApplication());
+            applicantForm1.setEmployeeIdentification(applicantForm.getEmployeeIdentification());
+            applicantForm1.setEmployeeOrientation(applicantForm.getEmployeeOrientation());
+            applicantForm1.setVisaDetails(applicantForm.getVisaDetails());
+            applicantForm1.setMedicalClearance(applicantForm.getMedicalClearance());
+            applicantForm1.setEmployeeWellness(applicantForm.getEmployeeWellness());
+            applicantForm1.setGender(applicantForm.getGender());
+            applicantForm1.setName(applicantForm.getName());
+            applicantForm1.setEmergencyContact(applicantForm.getEmergencyContact());
+            applicantForm1.setResume(applicantForm.getResume());
+            applicantForm1.setResumeContentType(applicantForm.getResumeContentType());
+            applicantForm1.setUserImageContentType(applicantForm.getUserImageContentType());
+            user.setUserImage(applicantForm.getUserImage());
+            userDaoRepository.save(user);
+            return applicationFormRepository.save(applicantForm1);
+        }
+
+
     }
 
     public List<ApplicantForm> getAllApplicantForm(){

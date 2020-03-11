@@ -22,6 +22,7 @@ public class TimesheetsDTO {
     private String status;
     private User user;
     private User supervisor;
+    private String dateSubmitted;
 
     public TimesheetsDTO() {
     }
@@ -168,5 +169,13 @@ public class TimesheetsDTO {
 
     public void setSupervisor(User supervisor) {
         this.supervisor = supervisor;
+    }
+
+    public String getDateSubmitted() {
+        return dateSubmitted;
+    }
+
+    public void setDateSubmitted(String dateSubmitted) {
+        this.dateSubmitted = dateSubmitted;
     }
 }

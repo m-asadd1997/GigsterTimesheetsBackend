@@ -52,6 +52,12 @@ public class TimesheetsController {
         return timesheetsService.getById(id);
     }
 
+    @GetMapping("/weekid/{id}/{userId}")
+    public ApiResponse getTimesheetsByWeekId(@PathVariable("id") Long id,@PathVariable("userId") Long userId){
+        return timesheetsService.getTimesheetsByWeekId(id,userId);
+    }
+
+
 
 
 }
