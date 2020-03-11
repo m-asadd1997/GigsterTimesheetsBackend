@@ -29,6 +29,8 @@ public class User {
 	private String organizationName;
 //    @Column
 //    private Long clientId;
+	@Lob
+	private byte[] userImage;
 
 	@OneToMany(mappedBy = "user")
 	@JsonIgnore
@@ -109,5 +111,13 @@ public class User {
 
 	public void setTimesheetsForSupervisor(List<Timesheets> timesheetsForSupervisor) {
 		this.timesheetsForSupervisor = timesheetsForSupervisor;
+	}
+
+	public byte[] getUserImage() {
+		return userImage;
+	}
+
+	public void setUserImage(byte[] userImage) {
+		this.userImage = userImage;
 	}
 }

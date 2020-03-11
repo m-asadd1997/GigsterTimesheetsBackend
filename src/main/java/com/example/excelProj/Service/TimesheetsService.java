@@ -51,6 +51,7 @@ public class TimesheetsService {
         timesheets.setModifiedBy(getNameOfModifier());
         timesheets.setSupervisor(timesheetsDTO.getSupervisor());
 
+
         return new ApiResponse(HttpStatus.OK.value(), "Timesheet saved successfully.",timesheetsRepository.save(timesheets));
 
 
@@ -148,5 +149,15 @@ public class TimesheetsService {
                 return new ApiResponse((HttpStatus.NOT_FOUND.value()), "Timesheet Not found.",null);
             }
 
+    }
+
+    public ApiResponse getTimesheetsByWeekId(Long id, Long userId){
+        Timesheets timesheets = timesheetsRepository.getTimesheetsByWeekId(id,userId);
+        if(timesheets != null){
+            return new ApiResponse<>((HttpStatus.OK.value()), "Timesheet found successfully.",timesheets);
+        }
+        else{
+            return new ApiResponse<>(HttpStatus.NOT_FOUND.value(),"Timesheet not found",null);
+        }
     }
 }

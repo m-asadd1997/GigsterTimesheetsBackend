@@ -8,6 +8,7 @@ public class AuthToken {
     private String userType;
     private  String email;
     private String organizationName;
+    private byte[] userImage;
 
     public AuthToken(String token, String username, String userType) {
         this.token = token;
@@ -39,8 +40,26 @@ public class AuthToken {
         this.organizationName = organizationName;
     }
 
+    public AuthToken(Long id, String token, String username, String userType, String email, String organizationName, byte[] userImage) {
+        this.id = id;
+        this.token = token;
+        this.username = username;
+        this.userType = userType;
+        this.email = email;
+        this.organizationName = organizationName;
+        this.userImage = userImage;
+    }
+
     public AuthToken(){
 
+    }
+
+    public byte[] getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(byte[] userImage) {
+        this.userImage = userImage;
     }
 
     public String getEmail() {

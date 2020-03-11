@@ -83,6 +83,11 @@ public class ApplicantForm implements Serializable {
     @Column(name = "emergency_contact")
     private Boolean emergencyContact;
 
+    @Column(name = "check_email")
+    private String checkEmail;
+
+
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -322,6 +327,14 @@ public class ApplicantForm implements Serializable {
         return this;
     }
 
+    public String getCheckEmail() {
+        return checkEmail;
+    }
+
+    public void setCheckEmail(String checkEmail) {
+        this.checkEmail = checkEmail;
+    }
+
     public void setSecurityClearance(Boolean securityClearance) {
         this.securityClearance = securityClearance;
     }
@@ -408,5 +421,37 @@ public class ApplicantForm implements Serializable {
             ", employeeWellness='" + isEmployeeWellness() + "'" +
             ", emergencyContact='" + isEmergencyContact() + "'" +
             "}";
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Boolean getEmployeeApplication() {
+        return employeeApplication;
+    }
+
+    public Boolean getEmployeeOrientation() {
+        return employeeOrientation;
+    }
+
+    public Boolean getEmployeeIdentification() {
+        return employeeIdentification;
+    }
+
+    public Boolean getSecurityClearance() {
+        return securityClearance;
+    }
+
+    public Boolean getMedicalClearance() {
+        return medicalClearance;
+    }
+
+    public Boolean getEmployeeWellness() {
+        return employeeWellness;
+    }
+
+    public Boolean getEmergencyContact() {
+        return emergencyContact;
     }
 }
