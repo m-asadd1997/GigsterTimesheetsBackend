@@ -68,6 +68,7 @@ public class ApplicationFormService {
             applicantForm1.setResume(applicantForm.getResume());
             applicantForm1.setResumeContentType(applicantForm.getResumeContentType());
             applicantForm1.setUserImageContentType(applicantForm.getUserImageContentType());
+            applicantForm1.setPhone(applicantForm.getPhone());
             user.setUserImage(applicantForm.getUserImage());
             userDaoRepository.save(user);
             return applicationFormRepository.save(applicantForm1);
@@ -139,6 +140,10 @@ public class ApplicationFormService {
             return new ApiResponse<>(200,"Applicant found successfully",applicantForm.get());
         }
         return new ApiResponse<ApplicantForm>(404,"Applicant not Found",null);
+    }
+
+    public ApiResponse getByCheckEmail(String checkEmail){
+        return new ApiResponse<>(200,"Profile found",applicationFormRepository.getApplicantFormByEmail(checkEmail));
     }
 
 }

@@ -66,6 +66,11 @@ public class ApplicationFormController {
 
     }
 
+    @GetMapping("/checkemail/{checkEmail}")
+    public ApiResponse<ApplicantForm> getByCheckEmail(@PathVariable("checkEmail") String checkEmail){
+        return  applicationFormService.getByCheckEmail(checkEmail);
+    }
+
 
 
 
