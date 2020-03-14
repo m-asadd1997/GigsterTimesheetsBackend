@@ -143,7 +143,12 @@ public class ApplicationFormService {
     }
 
     public ApiResponse getByCheckEmail(String checkEmail){
-        return new ApiResponse<>(200,"Profile found",applicationFormRepository.getApplicantFormByEmail(checkEmail));
+        ApplicantForm applicantForm = applicationFormRepository.getApplicantFormByEmail(checkEmail);
+        if(applicantForm != null) {
+            return new ApiResponse<>(200, "Profile found", applicantForm);
+        }else{
+            return new ApiResponse<>(400, "Profile not found", null);
+        }
     }
 
 }
