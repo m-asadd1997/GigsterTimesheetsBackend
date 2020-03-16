@@ -1,5 +1,6 @@
 package com.example.excelProj.Service;
 
+import com.example.excelProj.Model.ApplicantForm;
 import com.example.excelProj.Repository.UserDaoRepository;
 import com.example.excelProj.Commons.ApiResponse;
 import com.example.excelProj.Dto.UserDto;
@@ -7,6 +8,7 @@ import com.example.excelProj.Model.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +26,9 @@ import java.util.Optional;
 
 @Service("userDetailsService")
 public class UserServiceImpl implements UserDetailsService {
-	
+	@Autowired
+	private JavaMailSender javaMailSender;
+
 	@Autowired
 	private UserDaoRepository userDaoRepository;
 
@@ -88,6 +93,9 @@ public class UserServiceImpl implements UserDetailsService {
 			newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
 			newUser.setUserType(user.getUserType());
 			newUser.setActive(true);
+			if(user.getUserType().toLowerCase().equals("employee")  || user.getUserType().toLowerCase().equals("supervisor")){
+				trigerEmail(user.getEmail(),user.getPassword(),user.getUserType());
+			}
 			return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
 		}else{
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User Already exsist.",null);//return ;
@@ -114,6 +122,28 @@ public class UserServiceImpl implements UserDetailsService {
 	}
 
 
+	public ApiResponse<String> trigerEmail(String recevierEmail,String password,String userType) {
+		User user=userDaoRepository.findByEmail(recevierEmail);
+		if(user == null){
+			sendEmail(recevierEmail,password,userType);
+			return new ApiResponse<>(200,"Email Send Successfully",null);
+		}
+		return new ApiResponse<>(404,"User Already Exists","User Already Exists");
 
+
+	}
+
+	void sendEmail(String recevierEmail,String password,String userType) {
+
+		SimpleMailMessage msg = new SimpleMailMessage();
+		msg.setTo(recevierEmail);
+
+		msg.setSubject("Credentials For Timesheet Application as "+userType);
+		msg.setText("Email: "+ recevierEmail + "\n " +
+					"Password: " + password);
+
+		javaMailSender.send(msg);
+
+	}
 
 }
