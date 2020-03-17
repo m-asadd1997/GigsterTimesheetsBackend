@@ -8,6 +8,8 @@ import com.example.excelProj.Repository.TimesheetsRepository;
 import com.example.excelProj.Repository.UserDaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +27,9 @@ public class TimesheetsService {
 
     @Autowired
     UserDaoRepository userDaoRepository;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     public ApiResponse saveTimesheets(TimesheetsDTO timesheetsDTO){
 
@@ -50,6 +55,7 @@ public class TimesheetsService {
         timesheets.setWeekId(timesheetsDTO.getWeekId());
         timesheets.setModifiedBy(getNameOfModifier());
         timesheets.setSupervisor(timesheetsDTO.getSupervisor());
+        sendEmail(timesheetsDTO.getSupervisor().getEmail());
 
 
         return new ApiResponse(HttpStatus.OK.value(), "Timesheet saved successfully.",timesheetsRepository.save(timesheets));
@@ -109,6 +115,7 @@ public class TimesheetsService {
             timesheets.setModifiedBy(getNameOfModifier());
             timesheets.setSupervisor(timesheetsDTO.getSupervisor());
 
+
             return new ApiResponse((HttpStatus.OK.value()), "Timesheet modified successfully.", timesheetsRepository.save(timesheets));
         }
         else
@@ -159,5 +166,17 @@ public class TimesheetsService {
         else{
             return new ApiResponse<>(HttpStatus.NOT_FOUND.value(),"Timesheet not found",null);
         }
+    }
+
+    void sendEmail(String recevierEmail) {
+
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(recevierEmail);
+
+        msg.setSubject("Timesheet Recieved");
+        msg.setText("Timesheet recieved for status update");
+
+        javaMailSender.send(msg);
+
     }
 }

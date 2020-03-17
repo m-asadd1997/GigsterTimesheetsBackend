@@ -112,5 +112,25 @@ public class AuthenticationController {
         return userService.findOne(email);
     }
 
+    @GetMapping("/getusers/{organizationName}")
+    public ApiResponse getUsersByOrganizationName(@PathVariable("organizationName") String organizationName){
+        return userService.getUsersByOrganizationName(organizationName);
+    }
+
+    @DeleteMapping("/deleteusers/{id}")
+    public ApiResponse deleteUser(@PathVariable("id") Long id){
+        return userService.deleteUser(id);
+    }
+
+    @GetMapping("/getbyid/{id}")
+    public ApiResponse getUserById(@PathVariable("id") Long id){
+        return userService.getUserById(id);
+    }
+
+    @PostMapping("/registeradmin")
+    public ApiResponse<User> registerUser(@RequestBody UserDto userDto){
+        return userService.registerUser(userDto);
+    }
+
 
 }

@@ -23,4 +23,10 @@ public interface UserDaoRepository extends JpaRepository<User, Long> {
 
     @Query(value = "select * from user where user_type='SUPERVISOR' and organization_name=:organizationName",nativeQuery = true)
     public List<User> getSupervisorsByOrganizationName(@Param("organizationName") String organizationName);
+
+    @Query(value = "select * from user where organization_name=:organizationName and (user_type='employee' or user_type = 'supervisor')",nativeQuery = true)
+    public List<User> getUsersByOrganizationName(@Param("organizationName") String organizationName);
+
+    @Query(value ="select * from user where organization_name=:organizationName and user_type = 'admin'",nativeQuery = true)
+    public User getAdminOfOrganization(@Param("organizationName") String organizationName);
 }

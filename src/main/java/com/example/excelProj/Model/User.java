@@ -32,11 +32,11 @@ public class User {
 	@Lob
 	private byte[] userImage;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user",cascade = {CascadeType.ALL})
 	@JsonIgnore
 	List<Timesheets> timesheets;
 
-	@OneToMany(mappedBy = "supervisor")
+	@OneToMany(mappedBy = "supervisor",cascade = {CascadeType.ALL})
 	@JsonIgnore
 	List<Timesheets> timesheetsForSupervisor;
 
