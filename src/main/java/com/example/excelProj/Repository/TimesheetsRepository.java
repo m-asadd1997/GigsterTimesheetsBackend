@@ -19,7 +19,7 @@ public interface TimesheetsRepository extends JpaRepository<Timesheets,Long> {
     @Query(value ="select * from timesheets where user_id=:id",nativeQuery = true)
     public List<Timesheets> getTimeSheetsForLoggedinEmployee(@Param("id") Long id);
 
-    @Query(value ="select * from timesheets where supervisor_id=:id",nativeQuery = true)
+    @Query(value ="select * from timesheets where supervisor_id=:id and send_flag='YES'",nativeQuery = true)
     public List<Timesheets> getTimeSheetsForLoggedinSupervisor(@Param("id") Long id);
 
     @Query(value ="select * from timesheets where week_id =:id and user_id=:userId",nativeQuery = true)

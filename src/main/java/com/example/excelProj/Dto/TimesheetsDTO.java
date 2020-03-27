@@ -23,6 +23,8 @@ public class TimesheetsDTO {
     private User user;
     private User supervisor;
     private String dateSubmitted;
+    private String sendFlag;
+    private String comments;
 
     public TimesheetsDTO() {
     }
@@ -177,5 +179,21 @@ public class TimesheetsDTO {
 
     public void setDateSubmitted(String dateSubmitted) {
         this.dateSubmitted = dateSubmitted;
+    }
+
+    public String getSendFlag() {
+        return sendFlag;
+    }
+
+    public void setSendFlag(String sendFlag) {
+        this.sendFlag = sendFlag;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }

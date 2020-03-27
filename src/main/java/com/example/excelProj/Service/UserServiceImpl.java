@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserDetailsService {
 			newUser.setPassword(bcryptEncoder.encode(userDto.getPassword()));
 			newUser.setUserType(userDto.getUserType());
 			newUser.setActive(true);
-
+            trigerEmail(userDto.getEmail(),userDto.getPassword(),userDto.getUserType());
 			return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
 		}else if(founduser != null){
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User Already exsist.",null);//return ;
