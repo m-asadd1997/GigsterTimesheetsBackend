@@ -19,4 +19,14 @@ public class CompanyProfileController {
     public ApiResponse<CompanyProfile> saveCompanyProfile(@RequestBody CompanyProfileDTO companyProfileDTO){
         return companyProfileService.saveCompanyProfile(companyProfileDTO);
     }
+
+    @GetMapping("/{organizationName}")
+    public  ApiResponse getCompany(@PathVariable("organizationName") String organizationName){
+        return  companyProfileService.getCompanyById(organizationName);
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse editCompany(@PathVariable("id") Long id,@RequestBody CompanyProfileDTO companyProfileDTO){
+        return companyProfileService.editCompanyProfile(id,companyProfileDTO);
+    }
 }

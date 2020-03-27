@@ -54,10 +54,8 @@ public class TimesheetsService {
         timesheets.setOrganizationName(getOrganizationNameOfLoggedInUser());
         timesheets.setWeekId(timesheetsDTO.getWeekId());
         timesheets.setModifiedBy(getNameOfModifier());
-        timesheets.setSupervisor(timesheetsDTO.getSupervisor());
-        sendEmail(timesheetsDTO.getSupervisor().getEmail());
 
-
+        timesheets.setSendFlag("NO");
         return new ApiResponse(HttpStatus.OK.value(), "Timesheet saved successfully.",timesheetsRepository.save(timesheets));
 
 
@@ -108,12 +106,13 @@ public class TimesheetsService {
             timesheets.setSaturdayEndTime(timesheetsDTO.getSaturdayEndTime());
             timesheets.setSundayStartTime(timesheetsDTO.getSundayStartTime());
             timesheets.setSundayEndTime(timesheetsDTO.getSundayEndTime());
-            timesheets.setStatus("Approved");
+            timesheets.setStatus(timesheetsDTO.getStatus());
             timesheets.setUser(timesheetsDTO.getUser());
             timesheets.setOrganizationName(getOrganizationNameOfLoggedInUser());
             timesheets.setWeekId(timesheetsDTO.getWeekId());
             timesheets.setModifiedBy(getNameOfModifier());
             timesheets.setSupervisor(timesheetsDTO.getSupervisor());
+            timesheets.setComments(timesheetsDTO.getComments());
 
 
             return new ApiResponse((HttpStatus.OK.value()), "Timesheet modified successfully.", timesheetsRepository.save(timesheets));
@@ -179,4 +178,23 @@ public class TimesheetsService {
         javaMailSender.send(msg);
 
     }
+
+    public ApiResponse sendTimesheetToSupervisor(Long id, TimesheetsDTO timesheetsDTO){
+        Optional<Timesheets> timesheets1 = timesheetsRepository.findById(id);
+        if(timesheets1.isPresent()) {
+            Timesheets timesheets = timesheets1.get();
+            timesheets.setSendFlag("YES");
+            timesheets.setSupervisor(timesheetsDTO.getSupervisor());
+            sendEmail(timesheetsDTO.getSupervisor().getEmail());
+
+
+            return new ApiResponse((HttpStatus.OK.value()), "Timesheet send successfully.", timesheetsRepository.save(timesheets));
+
+        }
+        else{
+            return new ApiResponse((HttpStatus.NOT_FOUND.value()), "Timesheet Not found.",null);
+
+        }
+    }
+
 }

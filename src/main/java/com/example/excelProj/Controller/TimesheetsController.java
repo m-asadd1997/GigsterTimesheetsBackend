@@ -58,6 +58,10 @@ public class TimesheetsController {
     }
 
 
+    @PutMapping("/sendtosupervisor/{id}")
+    public ApiResponse sendToSupervisor(@PathVariable("id") Long id,@RequestBody TimesheetsDTO timesheetsDTO){
+        return timesheetsService.sendTimesheetToSupervisor(id,timesheetsDTO);
+    }
 
 
 }
