@@ -10,13 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,11 +46,12 @@ public class TimesheetsService {
         timesheets.setSaturdayEndTime(timesheetsDTO.getSaturdayEndTime());
         timesheets.setSundayStartTime(timesheetsDTO.getSundayStartTime());
         timesheets.setSundayEndTime(timesheetsDTO.getSundayEndTime());
-        timesheets.setStatus("Pending");
+        timesheets.setStatus(timesheetsDTO.getStatus());
         timesheets.setUser(timesheetsDTO.getUser());
         timesheets.setOrganizationName(getOrganizationNameOfLoggedInUser());
         timesheets.setWeekId(timesheetsDTO.getWeekId());
         timesheets.setModifiedBy(getNameOfModifier());
+        timesheets.setDateSubmitted(timesheetsDTO.getDateSubmitted());
 
         timesheets.setSendFlag("NO");
         return new ApiResponse(HttpStatus.OK.value(), "Timesheet saved successfully.",timesheetsRepository.save(timesheets));
@@ -113,6 +111,7 @@ public class TimesheetsService {
             timesheets.setModifiedBy(getNameOfModifier());
             timesheets.setSupervisor(timesheetsDTO.getSupervisor());
             timesheets.setComments(timesheetsDTO.getComments());
+            timesheets.setDateSubmitted(timesheetsDTO.getDateSubmitted());
 
 
             return new ApiResponse((HttpStatus.OK.value()), "Timesheet modified successfully.", timesheetsRepository.save(timesheets));
@@ -184,6 +183,7 @@ public class TimesheetsService {
         if(timesheets1.isPresent()) {
             Timesheets timesheets = timesheets1.get();
             timesheets.setSendFlag("YES");
+            timesheets.setStatus(timesheetsDTO.getStatus());
             timesheets.setSupervisor(timesheetsDTO.getSupervisor());
             sendEmail(timesheetsDTO.getSupervisor().getEmail());
 
