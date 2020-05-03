@@ -1,9 +1,6 @@
 package com.example.excelProj.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Timesheets {
@@ -29,14 +26,19 @@ public class Timesheets {
     private String organizationName;
     private String status;
     private String modifiedBy;
+    @Lob
+    private byte[] modifiedByImage;
+    private Long modifiedId;
     private String dateSubmitted;
+    private String sendFlag;
+    private String comments;
 
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     User user;
 
     @ManyToOne
-    @JoinColumn(name = "supervisor_id",nullable = false)
+    @JoinColumn(name = "supervisor_id",nullable = true)
     User supervisor;
 
 
@@ -217,5 +219,37 @@ public class Timesheets {
 
     public void setDateSubmitted(String dateSubmitted) {
         this.dateSubmitted = dateSubmitted;
+    }
+
+    public String getSendFlag() {
+        return sendFlag;
+    }
+
+    public void setSendFlag(String sendFlag) {
+        this.sendFlag = sendFlag;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public byte[] getModifiedByImage() {
+        return modifiedByImage;
+    }
+
+    public void setModifiedByImage(byte[] modifiedByImage) {
+        this.modifiedByImage = modifiedByImage;
+    }
+
+    public Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
     }
 }

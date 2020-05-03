@@ -2,14 +2,8 @@ package com.example.excelProj.Service;
 
 import com.example.excelProj.Commons.ApiResponse;
 import com.example.excelProj.Dto.ClientFormDTO;
-import com.example.excelProj.Model.ActivityLogs;
-import com.example.excelProj.Model.ApplicantForm;
-import com.example.excelProj.Model.ClientData;
-import com.example.excelProj.Model.User;
-import com.example.excelProj.Repository.ActivityLogsRepository;
-import com.example.excelProj.Repository.ApplicantFormRepository;
-import com.example.excelProj.Repository.ClientDataRepository;
-import com.example.excelProj.Repository.UserDaoRepository;
+import com.example.excelProj.Model.*;
+import com.example.excelProj.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -38,6 +32,9 @@ public class ApplicationFormService {
     @Autowired
     UserDaoRepository userDaoRepository;
 
+    @Autowired
+    TimesheetsRepository timesheetsRepository;
+
 
 
     public ApplicantForm save(ApplicantForm applicantForm) {
@@ -47,6 +44,7 @@ public class ApplicationFormService {
         if (applicantForm1 == null){
             user.setUserImage(applicantForm.getUserImage());
             userDaoRepository.save(user);
+            setModifierImage(user.getId(),applicantForm.getUserImage());
             return applicationFormRepository.save(applicantForm);
         }
         else{
@@ -69,13 +67,27 @@ public class ApplicationFormService {
             applicantForm1.setResumeContentType(applicantForm.getResumeContentType());
             applicantForm1.setUserImageContentType(applicantForm.getUserImageContentType());
             applicantForm1.setPhone(applicantForm.getPhone());
+            applicantForm1.setUserImage(applicantForm.getUserImage());
             user.setUserImage(applicantForm.getUserImage());
+            setModifierImage(user.getId(),applicantForm1.getUserImage());
             userDaoRepository.save(user);
             return applicationFormRepository.save(applicantForm1);
         }
 
 
     }
+
+
+    public void setModifierImage(Long id,byte[] image){
+        List<Timesheets> timesheets = timesheetsRepository.getTimesheetsByModifiedId(id);
+        if(!timesheets.isEmpty()){
+            for (Timesheets timesheets1 : timesheets){
+                timesheets1.setModifiedByImage(image);
+                timesheetsRepository.save(timesheets1);
+            }
+        }
+    }
+
 
     public List<ApplicantForm> getAllApplicantForm(){
        List<ApplicantForm>  applicantForm=applicationFormRepository.findAll();
