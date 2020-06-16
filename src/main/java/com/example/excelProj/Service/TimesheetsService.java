@@ -15,8 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,8 +26,10 @@ public class TimesheetsService {
     @Autowired
     UserDaoRepository userDaoRepository;
 
+
    @Autowired
    JavaMailSender javaMailSender;
+
 
     public ApiResponse saveTimesheets(TimesheetsDTO timesheetsDTO){
 
@@ -202,6 +202,7 @@ public class TimesheetsService {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(recevierEmail);
 
+
         msg.setSubject("Timesheet Received");
         msg.setText("Timesheet received for status update");
 
@@ -214,6 +215,7 @@ public class TimesheetsService {
         if(timesheets1.isPresent()) {
             Timesheets timesheets = timesheets1.get();
             timesheets.setSendFlag("YES");
+
             timesheets.setSupervisor(timesheetsDTO.getSupervisor());
             timesheets.setStatus(timesheetsDTO.getStatus());
             timesheets.setDateSubmitted(timesheetsDTO.getDateSubmitted());

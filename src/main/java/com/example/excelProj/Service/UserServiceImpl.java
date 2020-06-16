@@ -1,7 +1,9 @@
 package com.example.excelProj.Service;
 
 import com.example.excelProj.Model.ApplicantForm;
+
 import com.example.excelProj.Repository.ApplicantFormRepository;
+
 import com.example.excelProj.Repository.UserDaoRepository;
 import com.example.excelProj.Commons.ApiResponse;
 import com.example.excelProj.Dto.UserDto;
@@ -113,28 +115,31 @@ public class UserServiceImpl implements UserDetailsService {
 		}
 	}
 
-	public ApiResponse save(UserDto user) {
+
+
+    public ApiResponse save(UserDto user) {
 		User founduser = userDaoRepository.findByEmail(user.getEmail());
 
 		if(founduser == null) {
-			User newUser = new User();
-			newUser.setEmail(user.getEmail());
-			newUser.setName(user.getName());
-			newUser.setOrganizationName(user.getOrganizationName());
-			newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
-			newUser.setUserType(user.getUserType());
-			newUser.setActive(true);
-			if(user.getUserType().toLowerCase().equals("employee")  || user.getUserType().toLowerCase().equals("supervisor")){
-				trigerEmail(user.getEmail(),user.getPassword(),user.getUserType());
-			}
-			return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
-		}else if(founduser != null){
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User Already exsist.",null);//return ;
+		User newUser = new User();
+		newUser.setEmail(user.getEmail());
+		newUser.setName(user.getName());
+		newUser.setOrganizationName(user.getOrganizationName());
+		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+		newUser.setUserType(user.getUserType());
+		newUser.setActive(true);
+		if(user.getUserType().toLowerCase().equals("employee")  || user.getUserType().toLowerCase().equals("supervisor")){
+			trigerEmail(user.getEmail(),user.getPassword(),user.getUserType());
 		}
-		else{
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "Error adding user",null);//return ;
-		}
+		return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
+	}else if(founduser != null){
+		return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User Already exsist.",null);//return ;
 	}
+		else{
+		return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "Error adding user",null);//return ;
+	}
+}
+
 
 
 	public List<User> getActiveUsers(Long id){
@@ -173,8 +178,8 @@ public class UserServiceImpl implements UserDetailsService {
 		msg.setTo(recevierEmail);
 
 		msg.setSubject("Credentials For Timesheet Application as "+userType);
-		msg.setText("Email: "+ recevierEmail + "\n " +
-				"Password: " + password);
+		msg.setText("Email: "+ recevierEmail + "\n " +"Password: " + password);
+
 
 		javaMailSender.send(msg);
 
@@ -218,5 +223,6 @@ public class UserServiceImpl implements UserDetailsService {
 
 
 
+	}
 
 }

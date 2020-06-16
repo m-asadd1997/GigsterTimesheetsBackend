@@ -237,6 +237,7 @@ public class Timesheets {
         this.comments = comments;
     }
 
+
     public byte[] getModifiedByImage() {
         return modifiedByImage;
     }
@@ -252,4 +253,5 @@ public class Timesheets {
     public void setModifiedId(Long modifiedId) {
         this.modifiedId = modifiedId;
     }
+
 }
