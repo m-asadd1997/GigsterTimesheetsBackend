@@ -1,6 +1,9 @@
 package com.example.excelProj.Service;
 
 import com.example.excelProj.Model.ApplicantForm;
+
+import com.example.excelProj.Repository.ApplicantFormRepository;
+
 import com.example.excelProj.Repository.UserDaoRepository;
 import com.example.excelProj.Commons.ApiResponse;
 import com.example.excelProj.Dto.UserDto;
@@ -37,6 +40,9 @@ public class UserServiceImpl implements UserDetailsService {
 	@Autowired
 	private BCryptPasswordEncoder bcryptEncoder;
 
+	@Autowired
+	private ApplicantFormRepository applicantFormRepository;
+
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userDaoRepository.findByEmail(username);
 		if(user == null){
@@ -65,8 +71,8 @@ public class UserServiceImpl implements UserDetailsService {
 
 	public User findOne(String username) {
 
-		 User user = userDaoRepository.findByEmailAndActive(username,Boolean.TRUE);
-		 return user;
+		User user = userDaoRepository.findByEmailAndActive(username,Boolean.TRUE);
+		return user;
 
 	}
 
@@ -76,16 +82,16 @@ public class UserServiceImpl implements UserDetailsService {
 		return optionalUser.isPresent() ?  optionalUser.get() : null;
 	}
 
-    public UserDto update(UserDto userDto, Long id) {
-        User user = findById(id);
-        if(user != null) {
-            BeanUtils.copyProperties(userDto, user, "password");
-            userDaoRepository.save(user);
-        }
-        return userDto;
-    }
+	public UserDto update(UserDto userDto, Long id) {
+		User user = findById(id);
+		if(user != null) {
+			BeanUtils.copyProperties(userDto, user, "password");
+			userDaoRepository.save(user);
+		}
+		return userDto;
+	}
 
-    public ApiResponse registerUser(UserDto userDto){
+	public ApiResponse registerUser(UserDto userDto){
 		User founduser = userDaoRepository.findByEmail(userDto.getEmail());
 		User user1 = userDaoRepository.getAdminOfOrganization(userDto.getOrganizationName());
 		if(founduser == null && user1 == null) {
@@ -96,7 +102,7 @@ public class UserServiceImpl implements UserDetailsService {
 			newUser.setPassword(bcryptEncoder.encode(userDto.getPassword()));
 			newUser.setUserType(userDto.getUserType());
 			newUser.setActive(true);
-            trigerEmail(userDto.getEmail(),userDto.getPassword(),userDto.getUserType());
+			trigerEmail(userDto.getEmail(),userDto.getPassword(),userDto.getUserType());
 			return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
 		}else if(founduser != null){
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User Already exsist.",null);//return ;
@@ -108,6 +114,8 @@ public class UserServiceImpl implements UserDetailsService {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "Error adding user",null);//return ;
 		}
 	}
+
+
 
     public ApiResponse save(UserDto user) {
 		User founduser = userDaoRepository.findByEmail(user.getEmail());
@@ -133,6 +141,7 @@ public class UserServiceImpl implements UserDetailsService {
 }
 
 
+
 	public List<User> getActiveUsers(Long id){
 		Optional<User> user = userDaoRepository.findById(id);
 		if(user.isPresent()){
@@ -142,7 +151,7 @@ public class UserServiceImpl implements UserDetailsService {
 
 			List<User> activeUsers = userDaoRepository.findByActive();
 			return activeUsers;
- 		}
+		}
 
 		return null;
 	}
@@ -169,8 +178,8 @@ public class UserServiceImpl implements UserDetailsService {
 		msg.setTo(recevierEmail);
 
 		msg.setSubject("Credentials For Timesheet Application as "+userType);
-		msg.setText("Email: "+ recevierEmail + "\n " +
-					"Password: " + password);
+		msg.setText("Email: "+ recevierEmail + "\n " +"Password: " + password);
+
 
 		javaMailSender.send(msg);
 
@@ -189,6 +198,10 @@ public class UserServiceImpl implements UserDetailsService {
 	public ApiResponse deleteUser(Long id){
 		Optional<User> user = userDaoRepository.findById(id);
 		if(user.isPresent()){
+			ApplicantForm applicantForm = applicantFormRepository.getApplicantFormByEmail(user.get().getEmail());
+			if(applicantForm != null){
+				applicantFormRepository.deleteById(applicantForm.getId());
+			}
 			userDaoRepository.deleteById(id);
 			return new ApiResponse(200,"User Deleted successfully",null);
 		}
@@ -206,6 +219,10 @@ public class UserServiceImpl implements UserDetailsService {
 		else{
 			return new ApiResponse<>(404,"User not found",null);
 		}
+	}
+
+
+
 	}
 
 }

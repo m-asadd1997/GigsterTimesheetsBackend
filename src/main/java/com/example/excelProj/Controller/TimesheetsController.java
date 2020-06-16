@@ -63,5 +63,9 @@ public class TimesheetsController {
         return timesheetsService.sendTimesheetToSupervisor(id,timesheetsDTO);
     }
 
+    @GetMapping("/approved/{id}")
+    public ApiResponse getApprovedTimesheets(@PathVariable("id") Long id){
+        return timesheetsService.getApprovedTimesheets(id);
+    }
 
 }

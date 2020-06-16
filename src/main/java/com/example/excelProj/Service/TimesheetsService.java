@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -25,8 +26,10 @@ public class TimesheetsService {
     @Autowired
     UserDaoRepository userDaoRepository;
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+
+   @Autowired
+   JavaMailSender javaMailSender;
+
 
     public ApiResponse saveTimesheets(TimesheetsDTO timesheetsDTO){
 
@@ -52,7 +55,9 @@ public class TimesheetsService {
         timesheets.setWeekId(timesheetsDTO.getWeekId());
         timesheets.setModifiedBy(getNameOfModifier());
         timesheets.setDateSubmitted(timesheetsDTO.getDateSubmitted());
-
+        timesheets.setSupervisor(null);
+        timesheets.setModifiedId(getIdOfLoggedInUser());
+        timesheets.setModifiedByImage(getImageOfModifier());
         timesheets.setSendFlag("NO");
         return new ApiResponse(HttpStatus.OK.value(), "Timesheet saved successfully.",timesheetsRepository.save(timesheets));
 
@@ -70,6 +75,15 @@ public class TimesheetsService {
 
     }
 
+    public Long getIdOfLoggedInUser()
+    {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
+        User user = userDaoRepository.findByEmail(username);
+        return user.getId();
+    }
+
     public String getNameOfModifier()
     {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -79,6 +93,17 @@ public class TimesheetsService {
         return  user.getName();
 
     }
+
+    public byte[] getImageOfModifier()
+    {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
+        User user = userDaoRepository.findByEmail(username);
+        return  user.getUserImage();
+
+    }
+
 
 
     public ApiResponse getTimesheetsByOrganizationName(String organizationName){
@@ -109,6 +134,8 @@ public class TimesheetsService {
             timesheets.setOrganizationName(getOrganizationNameOfLoggedInUser());
             timesheets.setWeekId(timesheetsDTO.getWeekId());
             timesheets.setModifiedBy(getNameOfModifier());
+            timesheets.setModifiedId(getIdOfLoggedInUser());
+            timesheets.setModifiedByImage(getImageOfModifier());
             timesheets.setSupervisor(timesheetsDTO.getSupervisor());
             timesheets.setComments(timesheetsDTO.getComments());
             timesheets.setDateSubmitted(timesheetsDTO.getDateSubmitted());
@@ -130,6 +157,10 @@ public class TimesheetsService {
 
     public ApiResponse getTimeSheetsForLoggedinSupervisor(Long id){
         return new ApiResponse<>((HttpStatus.OK.value()), "Timesheets for Supervisor found successfully.",timesheetsRepository.getTimeSheetsForLoggedinSupervisor(id));
+    }
+
+    public ApiResponse getApprovedTimesheets(Long id){
+        return new ApiResponse<>((HttpStatus.OK.value()), "Approved Timesheets found successfully.",timesheetsRepository.getApprovedTimesheets(id));
     }
 
     public ApiResponse modifyStatusOnly(Long id,String changeStatus){
@@ -171,8 +202,9 @@ public class TimesheetsService {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(recevierEmail);
 
-        msg.setSubject("Timesheet Recieved");
-        msg.setText("Timesheet recieved for status update");
+
+        msg.setSubject("Timesheet Received");
+        msg.setText("Timesheet received for status update");
 
         javaMailSender.send(msg);
 
@@ -183,8 +215,10 @@ public class TimesheetsService {
         if(timesheets1.isPresent()) {
             Timesheets timesheets = timesheets1.get();
             timesheets.setSendFlag("YES");
-            timesheets.setStatus(timesheetsDTO.getStatus());
+
             timesheets.setSupervisor(timesheetsDTO.getSupervisor());
+            timesheets.setStatus(timesheetsDTO.getStatus());
+            timesheets.setDateSubmitted(timesheetsDTO.getDateSubmitted());
             sendEmail(timesheetsDTO.getSupervisor().getEmail());
 
 

@@ -26,8 +26,9 @@ public class Timesheets {
     private String organizationName;
     private String status;
     private String modifiedBy;
-
-
+    @Lob
+    private byte[] modifiedByImage;
+    private Long modifiedId;
     private String dateSubmitted;
     private String sendFlag;
     private String comments;
@@ -235,4 +236,22 @@ public class Timesheets {
     public void setComments(String comments) {
         this.comments = comments;
     }
+
+
+    public byte[] getModifiedByImage() {
+        return modifiedByImage;
+    }
+
+    public void setModifiedByImage(byte[] modifiedByImage) {
+        this.modifiedByImage = modifiedByImage;
+    }
+
+    public Long getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(Long modifiedId) {
+        this.modifiedId = modifiedId;
+    }
+
 }
