@@ -1,0 +1,189 @@
+<nav
+  class="navbar navbar-light bg-light"
+  style="background-color: white !important;border-top-color: black;border-top-style:solid; border-top-width: thin; border-bottom-style: ridge; box-shadow:0px 5px 5px rgb(179, 179, 179);"
+>
+<div>
+  <img src="assets/Capture.PNG" width="120" height="30">
+  </div>
+  <button
+    mat-stroked-button
+    (click)="goBack()"
+    style=" font-size: 1.1em;font-weight: 600;margin-left: -2%;"
+  >
+    Back
+  </button>
+  <div style="margin-left: 60%;">
+    <strong>{{userName}} </strong>
+  &nbsp;
+    <nz-badge nzStatus="success">
+      <nz-avatar
+        nzIcon="user"
+        [nzSrc]="
+          userImage != null
+            ? 'data:image/jpeg;base64,' + userImage
+            : 'assets/user.png'
+        "
+      ></nz-avatar>
+    </nz-badge>
+    <span style="font-size: xx-small;font-weight: 200;">{{userType}}</span>
+  </div>
+  <div style="margin-right: 10%;" style="cursor: pointer;" (click)="logout()">
+    <img src="assets/icons8-logout-rounded-left-24.png" alt="" />
+  </div>
+  <!-- <div class="row" style="float: right; margin-right: 0%;">
+    <img src="assets/logo.jpeg" height="33" width="57" />
+    </div> -->
+</nav>
+
+<br />
+
+<nz-spin nzSimple *ngIf="loader" style="margin-left: 45%;margin-top: 10%;" [nzSize]="'large'" nzTip="Loading..."></nz-spin>
+
+<div class="container" *ngIf="showForm">
+  <h1 style="color: #6E6F6D; font-weight: 600;margin-left: 25%;">
+    Profile
+    
+</h1>
+  <div class="row">
+    <!-- <button #openModal data-toggle="modal"
+    data-target="#myCropImageModal" nz-button [hidden]="true" [nzType]="'primary'" ><span>Show Modal</span></button> -->
+    <nz-modal  [(nzVisible)]="isVisible" nzTitle="Resize your image" (nzOnCancel)="handleCancel()" (nzOnOk)="updateCroppedImage()">
+      <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+      [containWithinAspectRatio]="containWithinAspectRatio" [aspectRatio]="1/1" [disabled]="true"
+      [resizeToWidth]="100" backgroundColor="lightgray" [resizeToHeight]="100" [cropperMinWidth]="100"
+      [roundCropper]="true" [canvasRotation]="canvasRotation" [transform]="transform" [alignImage]="'center'"
+      [style.display]="showCropper ? null : 'none'" [imageQuality]="100" (imageCropped)="imageCropped($event)"
+      (imageLoaded)="imageLoaded()" (cropperReady)="cropperReady($event)">
+    </image-cropper>
+
+    <div class="row">
+
+      <div class="col-lg-5 offset-4">
+    
+        <nz-slider [nzMin]="1" (ngModelChange)="zoom($event)" [nzMax]="10" [nzStep]="0.5"
+          [(ngModel)]="zoomvalue"></nz-slider>
+      
+      </div>
+    </div>
+    </nz-modal>
+    <div class="col-md-3">
+      <img
+        style="margin-left: 60%;"
+        [src]="
+          appFormObj.userImage != null
+            ? 'data:image/jpeg;base64,' + appFormObj.userImage
+            : 'assets/user.png'
+        "
+        alt="Avatar"
+        class="avatar"
+      />
+      <label
+        style="margin-left: 63%; font-size: 0.9em;margin-top: 5%;cursor: pointer;"
+        >Select Picture
+        <input
+          type="file"
+          id="imgFile"
+          (change)="onImageChange($event)"
+          style="margin-left: 40%; "
+        />
+      </label>
+    </div>
+
+    
+    <div class="col-md-6">
+      <mat-card>
+        <form class="example-form" #myForm="ngForm">
+          <h3>Personal Information</h3>
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="example-full-width">
+                <mat-label>Name</mat-label>
+                <input
+                  style="width: 100%;"
+                  matInput
+                  placeholder="Name"
+                  [(ngModel)]="appFormObj.name"
+                  name="name"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="example-full-width">
+                <mat-label>Email</mat-label>
+                <input
+                  style="width: 100%;"
+                  matInput
+                  placeholder="Email"
+                  name="email"
+                  [(ngModel)]="appFormObj.email"
+                  required
+                  [disabled]="true"
+                />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="example-full-width">
+                <mat-label>Phone Number</mat-label>
+                <input
+                  style="width: 100%;"
+                  matInput
+                  placeholder="phone number"
+                  name="phone"
+                  [(ngModel)]="appFormObj.phone"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field>
+                <mat-label style="font-size: 1em;">Gender</mat-label>
+                <mat-select
+                  name="gender"
+                  [(ngModel)]="appFormObj.gender"
+                  required
+                >
+                  <mat-option *ngFor="let gen of Gender" [value]="gen.value">
+                    {{ gen.viewValue }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <br />
+
+          <div class="row">
+            <div class="col-md-2">
+              <button
+                [disabled]="formValidation() || disableSaveButton"
+                (click)="saveApplicantForm(myForm)"
+                mat-raised-button
+                color="warn"
+              >
+              
+              <div *ngIf="showSaveLoading" class="spinner-grow text-light" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+                Save
+              </button>
+            </div>
+            
+            
+            <div *ngIf="showloading" class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+        </form>
+      </mat-card>
+    </div>
+  </div>
+</div>

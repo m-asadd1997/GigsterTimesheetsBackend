@@ -1,0 +1,123 @@
+<nav
+  class="navbar navbar-light bg-light"
+  style="background-color: white !important;border-top-color: black;border-top-style:solid; border-top-width: thin; border-bottom-style: ridge; box-shadow:0px 5px 5px rgb(179, 179, 179);"
+>
+<div>
+  <img src="assets/Capture.PNG" width="120" height="30">
+</div>
+  <div style="margin-right: 40%;">
+    <button
+      mat-stroked-button
+      (click)="goToAddNewUser()"
+      style=" font-size: 1.1em;font-weight: 600;"
+    >
+      Add new user
+    </button>
+    &nbsp;
+    <button
+      mat-stroked-button
+      (click)="goToUserTable()"
+      style="font-size: 1.1em;font-weight: 600;"
+    >
+      View Users
+    </button>
+    &nbsp;
+    <button
+      mat-stroked-button
+      (click)="goToOrganizationConfig()"
+      style="font-size: 1.1em;font-weight: 600;"
+    >
+      Profile
+    </button>
+   
+  </div>
+  <div style="margin-left: -10%;">
+    <nz-badge nzStatus="success">
+      <nz-avatar
+        nzIcon="user"
+        [nzSrc]="
+          userImage != null
+            ? 'data:image/jpeg;base64,' + userImage
+            : 'assets/user.png'
+        "
+      ></nz-avatar>
+    </nz-badge>
+  </div>
+  <div style="margin-right: 5%;" style="cursor: pointer;" (click)="logout()" >
+    <img src="assets/icons8-logout-rounded-left-24.png" alt="">
+  </div>
+</nav>
+<mat-card style="width: 40%; margin-left: 30%; margin-top: 2%;">
+  <div  style="font-size: large;">
+    <img src = "assets/icons8-contacts-30.png" > 
+    <span><b>Add User</b></span>
+  </div>
+  <hr />
+  <form class="example-form" #myForm="ngForm">
+    <div class="row">
+      <div class="col">
+        <mat-form-field class="example-full-width" style="width: 100%;">
+          <!-- <mat-label>Favorite food</mat-label> -->
+          <input matInput="text" placeholder="Name" [(ngModel)]=adduserobj.name name="name" />
+        </mat-form-field>
+      </div>
+      <!-- <div class="col">
+        <mat-form-field class="example-full-width" style="width: 100%;">
+          <input matInput="text" placeholder="Last Name" [(ngModel)]=adduserobj.lastname name="lastname" required/>
+        </mat-form-field>
+      </div> -->
+    </div>
+    <div>
+      <mat-form-field class="example-full-width" style="width: 100%;">
+        <!-- <mat-label>Favorite food</mat-label> -->
+        <input matInput="email" placeholder="Email" name="email" [(ngModel)]="adduserobj.email" 
+        email #email="ngModel" [ngClass]="{ 'is-invalid':email.invalid }"
+        />
+        <div *ngIf="email.invalid" class="invalid-feedback">
+          
+          <div *ngIf="email.errors.email">Email must be a valid email address</div>
+      </div>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field class="example-full-width" style="width: 100%;">
+        <!-- <mat-label>Favorite food</mat-label> -->
+        <input matInput [type]="hide ? 'password' : 'text'" placeholder="Password" placeholder="Password" name = "password" [(ngModel)]=adduserobj.password />
+      </mat-form-field>
+    </div>
+   
+    <div>
+      <mat-form-field class="example-full-width" style="width: 100%;">
+        <!-- <mat-label>Favorite food</mat-label> -->
+        <input matInput="text" disabled="true" placeholder="Organization Name" name="organizationName" [(ngModel)]="adduserobj.organizationName" 
+
+        />
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-radio-group aria-label="Select an option" name ="options"[(ngModel)]=adduserobj.userType>
+        <mat-radio-button value="EMPLOYEE">Employee</mat-radio-button>
+        <mat-radio-button value="SUPERVISOR">Supervisor</mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <hr>
+    <br>
+    <div class="row">
+      <button
+        [disabled]="disableSaveButton"
+        mat-raised-button
+        color="warn"
+        style="background-color: black;margin-left: 5%;"
+        (click)="submit(myForm);"
+      >
+      <div *ngIf="showLoader" class="spinner-grow text-light" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+        Submit
+      </button>
+      <!-- <div *ngIf="showLoader" class="spinner-border" style="margin-left: 1%;" role="status">
+        <span class="sr-only">Loading...</span>
+      </div> -->
+    </div>
+  </form>
+</mat-card>
