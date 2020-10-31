@@ -1,5 +1,7 @@
 package com.example.excelProj.Service;
 
+import com.example.excelProj.Commons.EmailTemplate;
+import com.example.excelProj.Dto.MessageDto;
 import com.example.excelProj.Model.ApplicantForm;
 
 import com.example.excelProj.Repository.ApplicantFormRepository;
@@ -10,23 +12,22 @@ import com.example.excelProj.Dto.UserDto;
 import com.example.excelProj.Model.User;
 
 
+import com.example.excelProj.Service.impl.NotificationService;
+import com.example.excelProj.util.Util;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service("userDetailsService")
@@ -42,6 +43,12 @@ public class UserServiceImpl implements UserDetailsService {
 
 	@Autowired
 	private ApplicantFormRepository applicantFormRepository;
+
+	@Autowired
+	private NotificationService notificationService;
+
+	@Value("${spring.mail.username}")
+	private String username;
 
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userDaoRepository.findByEmail(username);
@@ -99,10 +106,15 @@ public class UserServiceImpl implements UserDetailsService {
 			newUser.setEmail(userDto.getEmail());
 			newUser.setName(userDto.getName());
 			newUser.setOrganizationName(userDto.getOrganizationName());
-			newUser.setPassword(bcryptEncoder.encode(userDto.getPassword()));
 			newUser.setUserType(userDto.getUserType());
 			newUser.setActive(true);
-			trigerEmail(userDto.getEmail(),userDto.getPassword(),userDto.getUserType());
+			try{
+				newUser.setPassword(userDto.getPassword());
+				trigerEmail(newUser);
+			}catch(Exception e){
+				System.out.println(e);
+			}
+			newUser.setPassword(bcryptEncoder.encode(userDto.getPassword()));
 			return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
 		}else if(founduser != null){
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User Already exsist.",null);//return ;
@@ -118,21 +130,27 @@ public class UserServiceImpl implements UserDetailsService {
 
 
     public ApiResponse save(UserDto user) {
-		User founduser = userDaoRepository.findByEmail(user.getEmail());
+		User userExists = userDaoRepository.findByEmail(user.getEmail());
 
-		if(founduser == null) {
-		User newUser = new User();
-		newUser.setEmail(user.getEmail());
-		newUser.setName(user.getName());
-		newUser.setOrganizationName(user.getOrganizationName());
-		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
-		newUser.setUserType(user.getUserType());
-		newUser.setActive(true);
-		if(user.getUserType().toLowerCase().equals("employee")  || user.getUserType().toLowerCase().equals("supervisor")){
-			trigerEmail(user.getEmail(),user.getPassword(),user.getUserType());
-		}
-		return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
-	}else if(founduser != null){
+		if(userExists == null) {
+			User newUser = new User();
+			newUser.setEmail(user.getEmail());
+			newUser.setName(user.getName());
+			newUser.setOrganizationName(user.getOrganizationName());
+			newUser.setUserType(user.getUserType());
+			newUser.setActive(true);
+			if(Strings.isNotBlank(user.getUserType()) && user.getUserType().toLowerCase().equals("employee")  || user.getUserType().toLowerCase().equals("supervisor")){
+				try{
+					newUser.setPassword(user.getPassword());
+					trigerEmail(newUser);
+				}catch (Exception e){
+					e.printStackTrace();
+				}
+			}
+			newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+
+			return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
+	}else if(userExists != null){
 		return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "User Already exsist.",null);//return ;
 	}
 		else{
@@ -161,29 +179,28 @@ public class UserServiceImpl implements UserDetailsService {
 	}
 
 
-	public ApiResponse<String> trigerEmail(String recevierEmail,String password,String userType) {
-		User user=userDaoRepository.findByEmail(recevierEmail);
-		if(user == null){
-			sendEmail(recevierEmail,password,userType);
+	public ApiResponse<String> trigerEmail(User user) {
+		if(!userDaoRepository.existsByEmail(user.getEmail())){
+			sendEmail(user);
 			return new ApiResponse<>(200,"Email Send Successfully",null);
 		}
 		return new ApiResponse<>(404,"User Already Exists","User Already Exists");
-
-
 	}
 
-	void sendEmail(String recevierEmail,String password,String userType) {
 
-		SimpleMailMessage msg = new SimpleMailMessage();
-		msg.setTo(recevierEmail);
+	private void sendEmail(User newUser) {
+		MessageDto messageDto = new MessageDto();
+		messageDto.setSendTo(newUser.getEmail());
+		messageDto.setSubject("Credentials For Timesheet Application as "+newUser.getUserType());
 
-		msg.setSubject("Credentials For Timesheet Application as "+userType);
-		msg.setText("Email: "+ recevierEmail + "\n " +"Password: " + password);
-
-
-		javaMailSender.send(msg);
-
+		Map<String,Object> map = new HashMap<>();
+		map.put("company",newUser.getOrganizationName());
+		map.put("email",newUser.getEmail());
+		map.put("password",newUser.getPassword());
+		messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.REGISTER_EMAIL.getPath(),map));
+		notificationService.sendEmail(messageDto);
 	}
+
 
 	public ApiResponse<User> getUsersByOrganizationName(String organizationName){
 		List<User> users = userDaoRepository.getUsersByOrganizationName(organizationName);

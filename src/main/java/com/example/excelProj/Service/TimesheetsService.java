@@ -1,12 +1,17 @@
 package com.example.excelProj.Service;
 
 import com.example.excelProj.Commons.ApiResponse;
+import com.example.excelProj.Commons.EmailTemplate;
+import com.example.excelProj.Dto.MessageDto;
 import com.example.excelProj.Dto.TimesheetsDTO;
 import com.example.excelProj.Model.Timesheets;
 import com.example.excelProj.Model.User;
 import com.example.excelProj.Repository.TimesheetsRepository;
 import com.example.excelProj.Repository.UserDaoRepository;
+import com.example.excelProj.Service.impl.NotificationService;
+import com.example.excelProj.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,6 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -27,9 +34,11 @@ public class TimesheetsService {
     UserDaoRepository userDaoRepository;
 
 
-   @Autowired
-   JavaMailSender javaMailSender;
+    @Autowired
+    NotificationService notificationService;
 
+    @Value("${spring.mail.username}")
+    private String username;
 
     public ApiResponse saveTimesheets(TimesheetsDTO timesheetsDTO){
 
@@ -237,35 +246,61 @@ public class TimesheetsService {
 
     void sendEmail(String recevierEmail) {
 
-        SimpleMailMessage msg = new SimpleMailMessage();
+        /*SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(recevierEmail);
 
-
+        msg.setFrom(username);
         msg.setSubject("Timesheet Received");
         msg.setText("Timesheet received for status update");
 
-        javaMailSender.send(msg);
+        try {
+            javaMailSender.send(msg);
+        }catch (Exception e){
+            System.out.println(e);
+        }*/
+        MessageDto messageDto = new MessageDto();
+        messageDto.setSendTo(recevierEmail);
+        messageDto.setSubject("Timesheet Received");
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("company","");
+        map.put("text","Timesheet received for status update");
+        messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.DYNAMIC_EMAIL.getPath(),map));
+        notificationService.sendEmail(messageDto);
 
     }
 
     void sendEmailToEmployee(Timesheets timesheets) {
 
-        SimpleMailMessage msg = new SimpleMailMessage();
+        /*SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(timesheets.getUser().getEmail());
 
-
-        msg.setSubject("Timesheet " + timesheets.getStatus());
+        msg.setFrom(username);
+        msg.setSubject("YOUR TIMESHEET AS BEEN "+timesheets.getStatus().toUpperCase());
         msg.setText("Timesheet for week no. : "+ timesheets.getWeekId() + " is " + timesheets.getStatus() + " by " +timesheets.getSupervisor().getName());
 
-        javaMailSender.send(msg);
+        try {
+            javaMailSender.send(msg);
+        }catch (Exception e){
+            System.out.println(e);
+        }*/
+        MessageDto messageDto = new MessageDto();
+        messageDto.setSendTo(timesheets.getUser().getEmail());
+        messageDto.setSubject("YOUR TIMESHEET AS BEEN "+timesheets.getStatus().toUpperCase());
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("company",timesheets.getUser().getOrganizationName());
+        map.put("text","Timesheet for week no. : "+ timesheets.getWeekId() + " is " + timesheets.getStatus() + " by " +timesheets.getSupervisor().getName());
+        messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.DYNAMIC_EMAIL.getPath(),map));
+        notificationService.sendEmail(messageDto);
 
     }
 
 
     void sendEmailToSupervisorWithData(Timesheets timesheets){
-        SimpleMailMessage msg = new SimpleMailMessage();
+        /*SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(timesheets.getSupervisor().getEmail());
-
+        msg.setFrom(username);
         msg.setSubject("Timesheet Summary Received");
         msg.setText("For Employee : " + timesheets.getUser().getName()+ "\n"+
                         "Date Modified : " + timesheets.getDateSubmitted() +  "\n"+
@@ -278,7 +313,31 @@ public class TimesheetsService {
                         "Saturday Time : " +timesheets.getSatTotalHrs()+ "\n"+
                         "Sunday Time : " +timesheets.getSunTotalHrs()+ "\n"+
                         "Total Hours : "+timesheets.getTotalHrs());
-                        javaMailSender.send(msg);
+        try {
+            javaMailSender.send(msg);
+        }catch (Exception e){
+            System.out.println(e);
+        }*/
+        MessageDto messageDto = new MessageDto();
+        messageDto.setSendTo(timesheets.getUser().getEmail());
+        messageDto.setSubject("Timesheet Summary Received");
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("company",timesheets.getUser().getOrganizationName());
+        map.put("text","For Employee : " + timesheets.getUser().getName()+ "\n"+
+                "Date Modified : " + timesheets.getDateSubmitted() +  "\n"+
+                "Week No. :" + timesheets.getWeekId() + "\n"+
+                "Monday Time : " +timesheets.getMonTotalHrs()+ "\n"+
+                "Tuesday Time : " +timesheets.getTueTotalHrs()+ "\n"+
+                "Wednesday Time : " +timesheets.getWedTotalHrs()+ "\n"+
+                "Thursday Time : " +timesheets.getThursTotalHrs()+ "\n"+
+                "Friday Time : " +timesheets.getFriTotalHrs()+ "\n"+
+                "Saturday Time : " +timesheets.getSatTotalHrs()+ "\n"+
+                "Sunday Time : " +timesheets.getSunTotalHrs()+ "\n"+
+                "Total Hours : "+timesheets.getTotalHrs());
+        messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.DYNAMIC_EMAIL.getPath(),map));
+        notificationService.sendEmail(messageDto);
+
     }
 
     public ApiResponse sendTimesheetToSupervisor(Long id, TimesheetsDTO timesheetsDTO){

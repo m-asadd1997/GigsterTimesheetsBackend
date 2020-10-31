@@ -1,12 +1,17 @@
 package com.example.excelProj.Service;
 
 import com.example.excelProj.Commons.ApiResponse;
+import com.example.excelProj.Commons.EmailTemplate;
 import com.example.excelProj.Dto.ForgotPasswordDTO;
+import com.example.excelProj.Dto.MessageDto;
 import com.example.excelProj.Model.ForgotPassword;
 import com.example.excelProj.Model.User;
 import com.example.excelProj.Repository.ForgotPasswordRepository;
 import com.example.excelProj.Repository.UserDaoRepository;
+import com.example.excelProj.Service.impl.NotificationService;
+import com.example.excelProj.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -15,6 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -24,13 +31,16 @@ public class ForgotPasswordService {
     UserDaoRepository userDaoRepository;
 
     @Autowired
-    JavaMailSender javaMailSender;
+    NotificationService notificationService;
 
     @Autowired
     ForgotPasswordRepository forgotPasswordRepository;
 
     @Autowired
     private BCryptPasswordEncoder bcryptEncoder;
+
+    @Value("${spring.mail.username}")
+    private String username;
 
     public ApiResponse getUserTypeAndMail(ForgotPasswordDTO forgotPasswordDTO) {
         String password = "";
@@ -40,7 +50,8 @@ public class ForgotPasswordService {
                 password = getAlphaNumericString(6);
                 user.setPassword(bcryptEncoder.encode(password));
                 userDaoRepository.save(user);
-                mailToEmpAndSup(forgotPasswordDTO.getEmail(), password);
+                user.setPassword(password);
+                mailToEmpAndSup(user);
                 return new ApiResponse<>(200, "Your new password for timesheets is sent to your email.", null);
             } else {
                 ForgotPassword forgotPassword = new ForgotPassword();
@@ -49,7 +60,7 @@ public class ForgotPasswordService {
                 forgotPassword.setDate(new Date());
                 forgotPassword.setEmail(forgotPasswordDTO.getEmail());
                 forgotPasswordRepository.save(forgotPassword);
-                mailToAdmin(forgotPasswordDTO.getEmail(), token.toString());
+                mailToAdmin(forgotPasswordDTO.getEmail(), token.toString(),user.getOrganizationName());
                 return new ApiResponse<>(200, "Password reset link is sent to your email kindly check it.", forgotPassword);
             }
 
@@ -78,27 +89,41 @@ public class ForgotPasswordService {
         return new ApiResponse(200,"Password reset successfully",null);
     }
 
-    void mailToEmpAndSup(String recevierEmail, String password) {
+    void mailToEmpAndSup(User user) {
 
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(recevierEmail);
+        MessageDto messageDto = new MessageDto();
+        messageDto.setSendTo(user.getEmail());
+        messageDto.setSubject("New Password Received For Timesheets");
 
-        msg.setSubject("New Password Received For Timesheets");
-        msg.setText("Your new password is: " + password);
-
-        javaMailSender.send(msg);
+        Map<String,Object> map = new HashMap<>();
+        map.put("company",user.getOrganizationName());
+        map.put("text","Your new password is: " + user.getPassword());
+        messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.DYNAMIC_EMAIL.getPath(),map));
+        notificationService.sendEmail(messageDto);
 
     }
 
-    void mailToAdmin(String recevierEmail, String token) {
+    void mailToAdmin(String recevierEmail, String token,String company) {
 
-        SimpleMailMessage msg = new SimpleMailMessage();
+        /*SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(recevierEmail);
-
+        msg.setFrom(username);
         msg.setSubject("Reset your password");
         msg.setText("link to reset your password is : http://localhost:4200/#/resetlink/" + token);
+        try {
+            javaMailSender.send(msg);
+        }catch (Exception e){
+            System.out.println(e);
+        }*/
+        MessageDto messageDto = new MessageDto();
+        messageDto.setSendTo(recevierEmail);
+        messageDto.setSubject("Reset your password");
 
-        javaMailSender.send(msg);
+        Map<String,Object> map = new HashMap<>();
+        map.put("company",company);
+        map.put("text","link to reset your password is : http://localhost:4200/#/resetlink/" + token);
+        messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.DYNAMIC_EMAIL.getPath(),map));
+        notificationService.sendEmail(messageDto);
 
     }
 

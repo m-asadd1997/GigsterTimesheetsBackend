@@ -5,6 +5,7 @@ import com.example.excelProj.Dto.ClientFormDTO;
 import com.example.excelProj.Model.*;
 import com.example.excelProj.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -35,7 +36,8 @@ public class ApplicationFormService {
     @Autowired
     TimesheetsRepository timesheetsRepository;
 
-
+    @Value("${spring.mail.username}")
+    private String username;
 
     public ApplicantForm save(ApplicantForm applicantForm) {
         User user = userDaoRepository.findByEmail(applicantForm.getCheckEmail());
@@ -117,31 +119,6 @@ public class ApplicationFormService {
             return new ApiResponse<ApplicantForm>(404,"Record not found",null);
 
         }
-
-
-
-    }
-
-    public ApiResponse<String> trigerEmail(Long id, String recevierEmail) {
-        Optional<ApplicantForm> applicantForm=applicationFormRepository.findById(id);
-        if(applicantForm.isPresent()){
-            sendEmail(recevierEmail);
-            return new ApiResponse<>(200,"Email Send Successfully",null);
-        }
-        return new ApiResponse<>(404,"Applicant doesnot exsist","didnot Find the Applicant");
-
-
-    }
-
-    void sendEmail(String recevierEmail) {
-
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(recevierEmail);
-
-        msg.setSubject("Testing from Spring Boot");
-        msg.setText("Hello World \n Spring Boot Email");
-
-        javaMailSender.send(msg);
 
     }
 
