@@ -49,6 +49,13 @@ public class TimesheetsService {
         timesheets.setSaturdayEndTime(timesheetsDTO.getSaturdayEndTime());
         timesheets.setSundayStartTime(timesheetsDTO.getSundayStartTime());
         timesheets.setSundayEndTime(timesheetsDTO.getSundayEndTime());
+        timesheets.setMonTotalHrs(timesheetsDTO.getMonTotalHrs());
+        timesheets.setTueTotalHrs(timesheetsDTO.getTueTotalHrs());
+        timesheets.setWedTotalHrs(timesheetsDTO.getWedTotalHrs());
+        timesheets.setThursTotalHrs(timesheetsDTO.getThursTotalHrs());
+        timesheets.setFriTotalHrs(timesheetsDTO.getFriTotalHrs());
+        timesheets.setSatTotalHrs(timesheetsDTO.getSatTotalHrs());
+        timesheets.setSunTotalHrs(timesheetsDTO.getSunTotalHrs());
         timesheets.setStatus(timesheetsDTO.getStatus());
         timesheets.setUser(timesheetsDTO.getUser());
         timesheets.setOrganizationName(getOrganizationNameOfLoggedInUser());
@@ -58,6 +65,14 @@ public class TimesheetsService {
         timesheets.setSupervisor(null);
         timesheets.setModifiedId(getIdOfLoggedInUser());
         timesheets.setModifiedByImage(getImageOfModifier());
+        timesheets.setTotalHrs(timesheetsDTO.getTotalHrs());
+        timesheets.setMonExtraHrs(timesheetsDTO.getMonExtraHrs());
+        timesheets.setTueExtraHrs(timesheetsDTO.getTueExtraHrs());
+        timesheets.setWedExtraHrs(timesheetsDTO.getWedExtraHrs());
+        timesheets.setThursExtraHrs(timesheetsDTO.getThursExtraHrs());
+        timesheets.setFriExtraHrs(timesheetsDTO.getFriExtraHrs());
+        timesheets.setSatExtraHrs(timesheetsDTO.getSatExtraHrs());
+        timesheets.setSunExtraHrs(timesheetsDTO.getSunExtraHrs());
         timesheets.setSendFlag("NO");
         return new ApiResponse(HttpStatus.OK.value(), "Timesheet saved successfully.",timesheetsRepository.save(timesheets));
 
@@ -129,6 +144,13 @@ public class TimesheetsService {
             timesheets.setSaturdayEndTime(timesheetsDTO.getSaturdayEndTime());
             timesheets.setSundayStartTime(timesheetsDTO.getSundayStartTime());
             timesheets.setSundayEndTime(timesheetsDTO.getSundayEndTime());
+            timesheets.setMonTotalHrs(timesheetsDTO.getMonTotalHrs());
+            timesheets.setTueTotalHrs(timesheetsDTO.getTueTotalHrs());
+            timesheets.setWedTotalHrs(timesheetsDTO.getWedTotalHrs());
+            timesheets.setThursTotalHrs(timesheetsDTO.getThursTotalHrs());
+            timesheets.setFriTotalHrs(timesheetsDTO.getFriTotalHrs());
+            timesheets.setSatTotalHrs(timesheetsDTO.getSatTotalHrs());
+            timesheets.setSunTotalHrs(timesheetsDTO.getSunTotalHrs());
             timesheets.setStatus(timesheetsDTO.getStatus());
             timesheets.setUser(timesheetsDTO.getUser());
             timesheets.setOrganizationName(getOrganizationNameOfLoggedInUser());
@@ -139,6 +161,18 @@ public class TimesheetsService {
             timesheets.setSupervisor(timesheetsDTO.getSupervisor());
             timesheets.setComments(timesheetsDTO.getComments());
             timesheets.setDateSubmitted(timesheetsDTO.getDateSubmitted());
+            timesheets.setTotalHrs(timesheetsDTO.getTotalHrs());
+            timesheets.setMonExtraHrs(timesheetsDTO.getMonExtraHrs());
+            timesheets.setTueExtraHrs(timesheetsDTO.getTueExtraHrs());
+            timesheets.setWedExtraHrs(timesheetsDTO.getWedExtraHrs());
+            timesheets.setThursExtraHrs(timesheetsDTO.getThursExtraHrs());
+            timesheets.setFriExtraHrs(timesheetsDTO.getFriExtraHrs());
+            timesheets.setSatExtraHrs(timesheetsDTO.getSatExtraHrs());
+            timesheets.setSunExtraHrs(timesheetsDTO.getSunExtraHrs());
+            if(timesheetsDTO.getStatus().equals("Approved")){
+                sendEmailToSupervisorWithData(timesheets);
+                sendEmailToEmployee(timesheets);
+            }
 
 
             return new ApiResponse((HttpStatus.OK.value()), "Timesheet modified successfully.", timesheetsRepository.save(timesheets));
@@ -168,6 +202,10 @@ public class TimesheetsService {
         if(timesheets1.isPresent()){
         Timesheets timesheets = timesheets1.get();
         timesheets.setStatus(changeStatus);
+        if(changeStatus.equals("Approved")){
+            sendEmailToSupervisorWithData(timesheets);
+        }
+        sendEmailToEmployee(timesheets);
         return  new ApiResponse((HttpStatus.OK.value()), "Status modified successfully.",timesheetsRepository.save(timesheets));
     }
         else{
@@ -208,6 +246,39 @@ public class TimesheetsService {
 
         javaMailSender.send(msg);
 
+    }
+
+    void sendEmailToEmployee(Timesheets timesheets) {
+
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(timesheets.getUser().getEmail());
+
+
+        msg.setSubject("Timesheet " + timesheets.getStatus());
+        msg.setText("Timesheet for week no. : "+ timesheets.getWeekId() + " is " + timesheets.getStatus() + " by " +timesheets.getSupervisor().getName());
+
+        javaMailSender.send(msg);
+
+    }
+
+
+    void sendEmailToSupervisorWithData(Timesheets timesheets){
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(timesheets.getSupervisor().getEmail());
+
+        msg.setSubject("Timesheet Summary Received");
+        msg.setText("For Employee : " + timesheets.getUser().getName()+ "\n"+
+                        "Date Modified : " + timesheets.getDateSubmitted() +  "\n"+
+                        "Week No. :" + timesheets.getWeekId() + "\n"+
+                        "Monday Time : " +timesheets.getMonTotalHrs()+ "\n"+
+                        "Tuesday Time : " +timesheets.getTueTotalHrs()+ "\n"+
+                        "Wednesday Time : " +timesheets.getWedTotalHrs()+ "\n"+
+                        "Thursday Time : " +timesheets.getThursTotalHrs()+ "\n"+
+                        "Friday Time : " +timesheets.getFriTotalHrs()+ "\n"+
+                        "Saturday Time : " +timesheets.getSatTotalHrs()+ "\n"+
+                        "Sunday Time : " +timesheets.getSunTotalHrs()+ "\n"+
+                        "Total Hours : "+timesheets.getTotalHrs());
+                        javaMailSender.send(msg);
     }
 
     public ApiResponse sendTimesheetToSupervisor(Long id, TimesheetsDTO timesheetsDTO){

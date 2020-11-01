@@ -25,6 +25,21 @@ public class TimesheetsDTO {
     private String dateSubmitted;
     private String sendFlag;
     private String comments;
+    private String monTotalHrs;
+    private String tueTotalHrs;
+    private String wedTotalHrs;
+    private String thursTotalHrs;
+    private String friTotalHrs;
+    private String satTotalHrs;
+    private String sunTotalHrs;
+    private String totalHrs;
+    private String monExtraHrs;
+    private String tueExtraHrs;
+    private String wedExtraHrs;
+    private String thursExtraHrs;
+    private String friExtraHrs;
+    private String satExtraHrs;
+    private String sunExtraHrs;
 
     public TimesheetsDTO() {
     }
@@ -195,5 +210,125 @@ public class TimesheetsDTO {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public String getMonTotalHrs() {
+        return monTotalHrs;
+    }
+
+    public void setMonTotalHrs(String monTotalHrs) {
+        this.monTotalHrs = monTotalHrs;
+    }
+
+    public String getTueTotalHrs() {
+        return tueTotalHrs;
+    }
+
+    public void setTueTotalHrs(String tueTotalHrs) {
+        this.tueTotalHrs = tueTotalHrs;
+    }
+
+    public String getWedTotalHrs() {
+        return wedTotalHrs;
+    }
+
+    public void setWedTotalHrs(String wedTotalHrs) {
+        this.wedTotalHrs = wedTotalHrs;
+    }
+
+    public String getThursTotalHrs() {
+        return thursTotalHrs;
+    }
+
+    public void setThursTotalHrs(String thursTotalHrs) {
+        this.thursTotalHrs = thursTotalHrs;
+    }
+
+    public String getFriTotalHrs() {
+        return friTotalHrs;
+    }
+
+    public void setFriTotalHrs(String friTotalHrs) {
+        this.friTotalHrs = friTotalHrs;
+    }
+
+    public String getSatTotalHrs() {
+        return satTotalHrs;
+    }
+
+    public void setSatTotalHrs(String satTotalHrs) {
+        this.satTotalHrs = satTotalHrs;
+    }
+
+    public String getSunTotalHrs() {
+        return sunTotalHrs;
+    }
+
+    public void setSunTotalHrs(String sunTotalHrs) {
+        this.sunTotalHrs = sunTotalHrs;
+    }
+
+    public String getTotalHrs() {
+        return totalHrs;
+    }
+
+    public void setTotalHrs(String totalHrs) {
+        this.totalHrs = totalHrs;
+    }
+
+    public String getMonExtraHrs() {
+        return monExtraHrs;
+    }
+
+    public void setMonExtraHrs(String monExtraHrs) {
+        this.monExtraHrs = monExtraHrs;
+    }
+
+    public String getTueExtraHrs() {
+        return tueExtraHrs;
+    }
+
+    public void setTueExtraHrs(String tueExtraHrs) {
+        this.tueExtraHrs = tueExtraHrs;
+    }
+
+    public String getWedExtraHrs() {
+        return wedExtraHrs;
+    }
+
+    public void setWedExtraHrs(String wedExtraHrs) {
+        this.wedExtraHrs = wedExtraHrs;
+    }
+
+    public String getThursExtraHrs() {
+        return thursExtraHrs;
+    }
+
+    public void setThursExtraHrs(String thursExtraHrs) {
+        this.thursExtraHrs = thursExtraHrs;
+    }
+
+    public String getFriExtraHrs() {
+        return friExtraHrs;
+    }
+
+    public void setFriExtraHrs(String friExtraHrs) {
+        this.friExtraHrs = friExtraHrs;
+    }
+
+    public String getSatExtraHrs() {
+        return satExtraHrs;
+    }
+
+    public void setSatExtraHrs(String satExtraHrs) {
+        this.satExtraHrs = satExtraHrs;
+    }
+
+    public String getSunExtraHrs() {
+        return sunExtraHrs;
+    }
+
+    public void setSunExtraHrs(String sunExtraHrs) {
+        this.sunExtraHrs = sunExtraHrs;
     }
 }
