@@ -340,6 +340,39 @@ public class TimesheetsService {
 
     }
 
+    void sendEmailToEmployee(Timesheets timesheets) {
+
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(timesheets.getUser().getEmail());
+
+
+        msg.setSubject("Timesheet " + timesheets.getStatus());
+        msg.setText("Timesheet for week no. : "+ timesheets.getWeekId() + " is " + timesheets.getStatus() + " by " +timesheets.getSupervisor().getName());
+
+        javaMailSender.send(msg);
+
+    }
+
+
+    void sendEmailToSupervisorWithData(Timesheets timesheets){
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(timesheets.getSupervisor().getEmail());
+
+        msg.setSubject("Timesheet Summary Received");
+        msg.setText("For Employee : " + timesheets.getUser().getName()+ "\n"+
+                        "Date Modified : " + timesheets.getDateSubmitted() +  "\n"+
+                        "Week No. :" + timesheets.getWeekId() + "\n"+
+                        "Monday Time : " +timesheets.getMonTotalHrs()+ "\n"+
+                        "Tuesday Time : " +timesheets.getTueTotalHrs()+ "\n"+
+                        "Wednesday Time : " +timesheets.getWedTotalHrs()+ "\n"+
+                        "Thursday Time : " +timesheets.getThursTotalHrs()+ "\n"+
+                        "Friday Time : " +timesheets.getFriTotalHrs()+ "\n"+
+                        "Saturday Time : " +timesheets.getSatTotalHrs()+ "\n"+
+                        "Sunday Time : " +timesheets.getSunTotalHrs()+ "\n"+
+                        "Total Hours : "+timesheets.getTotalHrs());
+                        javaMailSender.send(msg);
+    }
+
     public ApiResponse sendTimesheetToSupervisor(Long id, TimesheetsDTO timesheetsDTO){
         Optional<Timesheets> timesheets1 = timesheetsRepository.findById(id);
         if(timesheets1.isPresent()) {
