@@ -1,0 +1,147 @@
+<nav
+  class="navbar navbar-light bg-light"
+  style="background-color: white !important;border-top-color: black;border-top-style:solid; border-top-width: thin; border-bottom-style: ridge; box-shadow:0px 5px 5px rgb(179, 179, 179);"
+>
+<div>
+  <img src="assets/Capture.PNG" width="120" height="30">
+</div>
+  <div style="margin-right: 40%;">
+    <button
+      mat-stroked-button
+      (click)="goToNewTimesheet()"
+      style=" font-size: 1.1em;font-weight: 600;"
+    >
+      Create Timesheet
+    </button>
+    &nbsp;
+    <button
+      mat-stroked-button
+      (click)="goToMyTimeSheets()"
+      style="font-size: 1.1em;font-weight: 600;"
+    >
+      My Timesheets
+    </button>
+    &nbsp;
+    <button
+      mat-stroked-button
+      (click)="goToProfiles()"
+      style="font-size: 1.1em;font-weight: 600;"
+    >
+    Profile
+    </button>
+  </div>
+  <div>
+    <strong>{{userName}} </strong>
+    &nbsp;
+    <nz-badge nzStatus="success">
+      <nz-avatar nzIcon="user" [nzSrc]="userImage != null
+      ? 'data:image/jpeg;base64,' + userImage
+      : 'assets/user.png'
+  "></nz-avatar>
+    </nz-badge>
+    <span style="font-size: xx-small;font-weight: 200;">{{userType}}</span>
+  </div>
+  <div style="margin-right: 5%;" style="cursor: pointer;" (click)="logout()" >
+    <img src="assets/icons8-logout-rounded-left-24.png" alt="">
+  </div>
+</nav>
+<br>
+<div class="container">
+    <h1 style="color: #6E6F6D; font-weight: 600;">
+        Current Timesheets
+        
+    </h1>
+    <!-- <mat-form-field>
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter by name">
+    </mat-form-field> -->
+   <div class="mat-elevation-z8">
+    
+      <table mat-table [dataSource]="dataSource">
+    
+        <!-- Position Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Timesheet# </th>
+          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+        </ng-container>
+    
+        <!-- Name Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Status </th>
+          <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+        </ng-container>
+    
+        <!-- Weight Column -->
+        <ng-container matColumnDef="modifiedBy">
+          <th mat-header-cell *matHeaderCellDef style="text-align: center;">Modified By</th>
+          <td mat-cell *matCellDef="let element">
+            <nz-avatar nzIcon="user" nzSize="small" [nzSrc]="element.userImage != null
+            ? 'data:image/jpeg;base64,' + element.userImage
+            : 'assets/user.png'
+        "></nz-avatar>
+        &nbsp;
+        {{element.modifiedBy}} </td>
+        </ng-container>
+        <ng-container matColumnDef="modifiedAt">
+          <th mat-header-cell *matHeaderCellDef style="text-align: center;">Modified At</th>
+          <td mat-cell *matCellDef="let element"> {{element.modifiedAt}} </td>
+        </ng-container>
+        <ng-container matColumnDef="week">
+            <th mat-header-cell *matHeaderCellDef style="text-align: center;">Week</th>
+            <td mat-cell *matCellDef="let element"> {{element.week}} </td>
+          </ng-container>
+          <ng-container matColumnDef="comments">
+            <th mat-header-cell *matHeaderCellDef style="text-align: center;">Comments</th>
+            <td mat-cell *matCellDef="let element" > {{element.comments}} </td>
+          </ng-container>
+        <!-- Symbol Column -->
+        <!-- <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Sent By </th>
+          <td mat-cell *matCellDef="let element"> {{element.}} </td>
+        </ng-container> -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Action </th>
+          <td mat-cell *matCellDef="let element">
+          <button mat-icon-button  color="primary" (click)="viewTimesheet(element.id)"><mat-icon>visibility</mat-icon></button> 
+      </td>
+  
+        </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" style="text-align: center; overflow: auto;"></tr>
+      </table>
+    
+      <mat-paginator  #scheduledOrdersPaginator [pageSize]="5"  [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  
+  
+     
+      
+      <div *ngIf="showLoader" style="margin-left: 40%;">
+        <div class="spinner-grow text-primary" role="status">
+          <span class="sr-only">Loading...</span> 
+        </div>
+        <div class="spinner-grow text-secondary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-success" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-danger" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-warning" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-info" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-light" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-dark" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+    </div>
+ 

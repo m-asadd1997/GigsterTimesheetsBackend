@@ -1,0 +1,60 @@
+<router-outlet></router-outlet>
+<div class="bg-img">
+  <form action="/action_page.php" class="container">
+    <div class="col-lg-12" style="margin-top: 5px; margin-left: 18%;">
+      <img src="assets/login.PNG" height="43" width="170" />
+    </div>
+    <br />
+    <div style="margin-left: 12%;">
+      Don’t use Gigster Yet?
+      <a style="color: steelblue;" (click)="routeToRegister()">Register now.</a>
+    </div>
+    <br />
+
+    <label for="email"><b>Email</b></label>
+    <input type="text" #email placeholder="Enter Email" name="email" required />
+
+    <label for="psw"><b>Password</b></label>
+    <input
+      type="password"
+      #password
+      placeholder="Enter Password"
+      name="psw"
+      required
+    />
+    <div style="color: steelblue;cursor: pointer;" (click)="goToForgotPassword()">
+      Forgot your password?
+    </div>
+    <br />
+    <button
+      type="submit"
+      mat-stroked-button
+      style="
+        color: whitesmoke;
+        background-color: black;
+        font-weight: lighter;
+        margin-left: 8%;
+      "
+      (click)="check(email.value, password.value)"
+    >
+      <div *ngIf="showLoading" class="spinner-grow text-light" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      Login
+    </button>
+
+    <button
+      type="submit"
+      mat-stroked-button
+      style="
+        color: whitesmoke;
+        background-color: black;
+        font-weight: lighter;
+        margin-left: 2%;
+      "
+      (click)="routeToRegister()"
+    >
+      Register
+    </button>
+  </form>
+</div>

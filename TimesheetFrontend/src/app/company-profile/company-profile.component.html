@@ -1,0 +1,184 @@
+<nav
+  class="navbar navbar-light bg-light"
+  style="background-color: white !important;border-top-color: black;border-top-style:solid; border-top-width: thin; border-bottom-style: ridge; box-shadow:0px 5px 5px rgb(179, 179, 179);"
+>
+<div>
+  <img src="assets/Capture.PNG" width="120" height="30">
+</div>
+  <div style="margin-right: 40%;">
+    <button
+      mat-stroked-button
+      (click)="goToAddNewUser()"
+      style=" font-size: 1.1em;font-weight: 600;"
+    >
+      Add new user
+    </button>
+    &nbsp;
+    <button
+      mat-stroked-button
+      (click)="goToUserTable()"
+      style="font-size: 1.1em;font-weight: 600;"
+    >
+      View Users
+    </button>
+    &nbsp;
+    <button
+      mat-stroked-button
+      (click)="goToOrganizationConfig()"
+      style="font-size: 1.1em;font-weight: 600;"
+    >
+      Profile
+    </button>
+    
+  </div>
+  <div style="margin-left: -10%;">
+    <nz-badge nzStatus="success">
+      <nz-avatar
+        nzIcon="user"
+        [nzSrc]="
+          companyImage != null
+            ? 'data:image/jpeg;base64,' + companyImage
+            : 'assets/user.png'
+        "
+      ></nz-avatar>
+    </nz-badge>
+  </div>
+  <div style="margin-right: 0%;" style="cursor: pointer;" (click)="logout()" >
+    <img src="assets/icons8-logout-rounded-left-24.png" alt="">
+  </div>
+</nav>
+<!-- <div *ngIf="loader" style="margin-left: 47%; margin-top: 10%;">
+  <div class="spinner-grow text-info" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+  <div class="spinner-grow text-secondary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div> -->
+<nz-spin nzSimple *ngIf="loader" style="margin-left: 45%;margin-top: 10%;" [nzSize]="'large'" nzTip="Loading..."></nz-spin>
+
+<mat-card style="width: 40%; margin-left: 30%; margin-top: 2%;" *ngIf="showForm">
+    <div style="font-size: large;">
+      <img src = "assets/icons8-contacts-30.png" > 
+      <b>Company Profile</b>
+      <div class="row">
+        <nz-modal  [(nzVisible)]="isVisible" nzTitle="Resize your image" (nzOnCancel)="handleCancel()" (nzOnOk)="updateCroppedImage()">
+          <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+          [containWithinAspectRatio]="containWithinAspectRatio" [aspectRatio]="1/1" [disabled]="true"
+          [resizeToWidth]="100" backgroundColor="lightgray" [resizeToHeight]="100" [cropperMinWidth]="100"
+          [roundCropper]="true" [canvasRotation]="canvasRotation" [transform]="transform" [alignImage]="'center'"
+          [style.display]="showCropper ? null : 'none'" [imageQuality]="100" (imageCropped)="imageCropped($event)"
+          (imageLoaded)="imageLoaded()" (cropperReady)="cropperReady($event)">
+        </image-cropper>
+    
+        <div class="row">
+    
+          <div class="col-lg-5 offset-4">
+        
+            <nz-slider [nzMin]="1" (ngModelChange)="zoom($event)" [nzMax]="10" [nzStep]="0.5"
+              [(ngModel)]="zoomvalue"></nz-slider>
+          
+          </div>
+        </div>
+        </nz-modal>
+      <div class="col-md-8" >
+      <img
+      style="margin-left: 60%;"
+      [src]="
+        companyObj.companyimage != null
+          ? 'data:image/jpeg;base64,' + companyObj.companyimage
+          : 'assets/user.png'
+      "
+      alt="Avatar"
+      class="avatar"
+    />
+    <label
+      style="margin-left: 63%; font-size: 0.6em;margin-top: 5%;cursor: pointer;"
+      >Select Picture
+      <input
+        type="file"
+        id="imgFile"
+        (change)="onImageChange($event)"
+        style="margin-left: 40%; "
+      />
+    </label>
+    </div>
+  </div>
+     
+    </div>
+    <hr />
+    <form class="example-form" #myForm="ngForm">
+
+        <div class="col">
+          <mat-form-field class="example-full-width" style="width: 100%;">
+            <!-- <mat-label>Favorite food</mat-label> -->
+            <input matInput="text" placeholder="Company Name" [(ngModel)]=companyObj.companyName name="companyName" required/>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field class="example-full-width" style="width: 100%;">
+            <!-- <mat-label>Favorite food</mat-label> -->
+            <input matInput="text" placeholder="Corporate Address" [(ngModel)]=companyObj.corporateAddress name="corporateAddress" required/>
+          </mat-form-field>
+        </div>
+      
+      <div class = "col">
+        <mat-form-field class="example-full-width" style="width: 100%;">
+          <!-- <mat-label>Favorite food</mat-label> -->
+          <input matInput="text" placeholder="Billing Address" name="address" [(ngModel)]="companyObj.billingAddress" required
+  
+          />
+        </mat-form-field>
+      </div>
+      <div class = "col">
+        <mat-form-field class="example-full-width" style="width: 100%;">
+          <!-- <mat-label>Favorite food</mat-label> -->
+          <input matInput="text" placeholder="Contact Name" name = name [(ngModel)]=companyObj.contactName required/>
+        </mat-form-field>
+      </div>
+      <div class = "col">
+        <mat-form-field class="example-full-width" style="width: 100%;">
+          <!-- <mat-label>Favorite food</mat-label> -->
+          <input matInput="text" placeholder="Contact Title" name=title [(ngModel)]=companyObj.contactTitle required />
+        </mat-form-field>
+      </div>
+     
+      <div class="col">
+        <mat-form-field>
+          <mat-label style="font-size: 1em;"
+            >Starting Day of the Week</mat-label
+          >
+          <mat-select
+            name="day"
+            [(ngModel)]="companyObj.startingDayOfWeek"
+            required
+          >
+            <mat-option *ngFor="let day of days" [value]="day.value">
+              {{ day.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button
+        [disabled]="disableSaveButton"
+        mat-raised-button
+        color="warn"
+        style="background-color: black;margin-left: 20%;"
+        (click)="submit(myForm)"
+      >
+      <div *ngIf="showLoader" class="spinner-grow text-light" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+        Save
+      </button>
+      <!-- <div *ngIf="showLoader" class="spinner-border" style="margin-left: 1%;" role="status">
+        <span class="sr-only">Loading...</span>
+      </div> -->
+      </div>
+      <hr>
+      <br>
+      
+      
+      
+    </form>
+  </mat-card>
+  

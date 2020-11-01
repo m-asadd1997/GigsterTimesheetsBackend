@@ -75,6 +75,12 @@
 <!--			<artifactId>spring-boot-starter-tomcat</artifactId>-->
 <!--			<scope>provided</scope>-->
 <!--		</dependency>-->
+		<!-- https://mvnrepository.com/artifact/org.antlr/stringtemplate -->
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>stringtemplate</artifactId>
+			<version>3.2</version>
+		</dependency>
 
 	</dependencies>
 
@@ -86,5 +92,25 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<activatedProperties>dev</activatedProperties>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>prod</id>
+			<properties>
+				<activatedProperties>prod</activatedProperties>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>

@@ -29,4 +29,6 @@ public interface UserDaoRepository extends JpaRepository<User, Long> {
 
     @Query(value ="select * from user where organization_name=:organizationName and user_type = 'admin'",nativeQuery = true)
     public User getAdminOfOrganization(@Param("organizationName") String organizationName);
+
+    Boolean existsByEmail(String username);
 }

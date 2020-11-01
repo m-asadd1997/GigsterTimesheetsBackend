@@ -1,0 +1,195 @@
+<nav
+  class="navbar navbar-light bg-light"
+  style="
+    background-color: white !important;
+    border-top-color: black;
+    border-top-style: solid;
+    border-top-width: thin;
+    border-bottom-style: ridge;
+    box-shadow: 0px 5px 5px rgb(179, 179, 179);
+  "
+>
+  <div>
+    <img src="assets/Capture.PNG" width="120" height="30" />
+  </div>
+
+
+  <button
+    mat-stroked-button
+    (click)="goToPreviousTimesheets()"
+    style="font-size: 1.1em; font-weight: 600; margin-left: 0%;"
+  >
+    Previous Timesheets
+  </button>
+  <button
+    mat-stroked-button
+    (click)="goToCurrentTimesheets()"
+    style="font-size: 1.1em; font-weight: 600; margin-left: 0%;"
+  >
+    Current Timesheets
+  </button>
+  <button
+  mat-stroked-button
+  (click)="goToProfiles()"
+  style="font-size: 1.1em; font-weight: 600; margin-left: 0%;"
+>
+  Profile
+</button>
+
+  <div style="margin-left: 38%;">
+    <strong>{{ userName }} </strong>
+    &nbsp;
+    <nz-badge nzStatus="success">
+      <nz-avatar
+        nzIcon="user"
+        [nzSrc]="
+          userImage != null
+            ? 'data:image/jpeg;base64,' + userImage
+            : 'assets/user.png'
+        "
+      ></nz-avatar>
+    </nz-badge>
+    <span style="font-size: xx-small; font-weight: 200;">{{ userType }}</span>
+  </div>
+  <div style="margin-right: 5%;" style="cursor: pointer;" (click)="logout()">
+    <img src="assets/icons8-logout-rounded-left-24.png" alt="" />
+  </div>
+</nav>
+<br />
+<div class="container">
+  <h1 style="color: #6e6f6d; font-weight: 600;">
+    Current Timesheets
+  </h1>
+  <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource">
+      <!-- Position Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;">
+          Timesheet#
+        </th>
+        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;">
+          Status
+        </th>
+        <td mat-cell *matCellDef="let element">{{ element.status }}</td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="lastModifiedBy">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;">
+          Modified By
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <nz-avatar
+          nzIcon="user"
+          nzSize="small"
+          [nzSrc]="
+            element.modifierImage != null
+              ? 'data:image/jpeg;base64,' + element.modifierImage
+              : 'assets/user.png'
+          "
+        ></nz-avatar>
+        &nbsp;
+          {{ element.modifiedBy }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="modifiedAt">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;">
+          Modified At
+        </th>
+        <td mat-cell *matCellDef="let element">{{ element.modifiedAt }}</td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="sentBy">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;">
+          Sent By
+        </th>
+        <td mat-cell *matCellDef="let element">{{ element.sentBy }}</td>
+      </ng-container>
+      <ng-container matColumnDef="week">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;">
+          Week
+        </th>
+        <td mat-cell *matCellDef="let element">{{ element.week }}</td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;">
+          Action
+        </th>
+        <!-- <td mat-cell *matCellDef="let element"> {{element.address}} </td> -->
+        <td mat-cell *matCellDef="let element">
+          <button
+            mat-icon-button
+            matTooltip="Approve"
+            color="primary"
+            (click)="approveTimesheet(element.id)"
+          >
+            <mat-icon>check_circle</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            matTooltip="Modify"
+            (click)="modifyAndApproveTimesheet(element.id)"
+          >
+            <mat-icon>add_circle</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            matTooltip="Disapprove"
+            color="warn"
+            (click)="disapproveTimesheet(element.id)"
+          >
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        style="text-align: center; overflow: auto;"
+      ></tr>
+      
+    </table>
+
+    <mat-paginator
+      #scheduledOrdersPaginator
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+    ></mat-paginator>
+
+    <div *ngIf="showLoader" style="margin-left: 40%;">
+      <div class="spinner-grow text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="spinner-grow text-secondary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="spinner-grow text-success" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="spinner-grow text-danger" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="spinner-grow text-warning" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="spinner-grow text-info" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="spinner-grow text-light" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="spinner-grow text-dark" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
