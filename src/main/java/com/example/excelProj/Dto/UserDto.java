@@ -8,19 +8,21 @@ public class UserDto {
     private Boolean active ;
     private String userType;
     private String organizationName;
+    private Boolean paid;
 //    private Long clientId;
 
 
 	public UserDto() {
 	}
 
-	public UserDto(String name, String email, String password, Boolean active, String userType, String organizationName) {
+	public UserDto(String name, String email, String password, Boolean active, String userType, String organizationName, Boolean paid) {
 		this.name = name;
 		this.email = email;
 		this.password = password;
 		this.active = active;
 		this.userType = userType;
 		this.organizationName = organizationName;
+		this.paid = paid;
 	}
 
 	public String getName() {
@@ -69,5 +71,13 @@ public class UserDto {
 
 	public void setOrganizationName(String organizationName) {
 		this.organizationName = organizationName;
+	}
+
+	public Boolean getPaid() {
+		return paid;
+	}
+
+	public void setPaid(Boolean paid) {
+		this.paid = paid;
 	}
 }

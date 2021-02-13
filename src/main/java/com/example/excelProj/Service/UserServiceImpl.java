@@ -107,6 +107,7 @@ public class UserServiceImpl implements UserDetailsService {
 			newUser.setName(userDto.getName());
 			newUser.setOrganizationName(userDto.getOrganizationName());
 			newUser.setUserType(userDto.getUserType());
+			newUser.setPaid(userDto.getPaid());
 			newUser.setActive(true);
 			try{
 				newUser.setPassword(userDto.getPassword());
@@ -134,20 +135,22 @@ public class UserServiceImpl implements UserDetailsService {
 
 		if(userExists == null) {
 			User newUser = new User();
+			String password = getAlphaNumericString(8);
 			newUser.setEmail(user.getEmail());
 			newUser.setName(user.getName());
 			newUser.setOrganizationName(user.getOrganizationName());
 			newUser.setUserType(user.getUserType());
+			newUser.setPaid(user.getPaid());
 			newUser.setActive(true);
 			if(Strings.isNotBlank(user.getUserType()) && user.getUserType().toLowerCase().equals("employee")  || user.getUserType().toLowerCase().equals("supervisor")){
 				try{
-					newUser.setPassword(user.getPassword());
+					newUser.setPassword(password);
 					trigerEmail(newUser);
 				}catch (Exception e){
 					e.printStackTrace();
 				}
 			}
-			newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+			newUser.setPassword(bcryptEncoder.encode(password));
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "User saved successfully.",	userDaoRepository.save(newUser));//return ;
 	}else if(userExists != null){
@@ -191,7 +194,7 @@ public class UserServiceImpl implements UserDetailsService {
 	private void sendEmail(User newUser) {
 		MessageDto messageDto = new MessageDto();
 		messageDto.setSendTo(newUser.getEmail());
-		messageDto.setSubject("Credentials For Timesheet Application as "+newUser.getUserType());
+		messageDto.setSubject("Credentials For Timesheet");
 
 		Map<String,Object> map = new HashMap<>();
 		map.put("company",newUser.getOrganizationName());
@@ -236,6 +239,32 @@ public class UserServiceImpl implements UserDetailsService {
 		else{
 			return new ApiResponse<>(404,"User not found",null);
 		}
+	}
+
+	public String getAlphaNumericString(int n) {
+
+		// chose a Character random from this String
+		String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+				+ "0123456789"
+				+ "abcdefghijklmnopqrstuvxyz";
+
+		// create StringBuffer size of AlphaNumericString
+		StringBuilder sb = new StringBuilder(n);
+
+		for (int i = 0; i < n; i++) {
+
+			// generate a random number between
+			// 0 to AlphaNumericString variable length
+			int index
+					= (int) (AlphaNumericString.length()
+					* Math.random());
+
+			// add Character one by one in end of sb
+			sb.append(AlphaNumericString
+					.charAt(index));
+		}
+
+		return sb.toString();
 	}
 
 

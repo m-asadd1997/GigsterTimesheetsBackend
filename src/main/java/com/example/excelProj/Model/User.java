@@ -32,6 +32,9 @@ public class User {
 	@Lob
 	private byte[] userImage;
 
+	@Column
+	private Boolean paid;
+
 	@OneToMany(mappedBy = "user",cascade = {CascadeType.ALL})
 	@JsonIgnore
 	List<Timesheets> timesheets;
@@ -40,6 +43,21 @@ public class User {
 	@JsonIgnore
 	List<Timesheets> timesheetsForSupervisor;
 
+
+	public User() {
+	}
+
+	public User(String email, String name, String password, Boolean active, String userType, String organizationName, byte[] userImage, Boolean paid) {
+
+		this.email = email;
+		this.name = name;
+		this.password = password;
+		this.active = active;
+		this.userType = userType;
+		this.organizationName = organizationName;
+		this.userImage = userImage;
+		this.paid = paid;
+	}
 
 	public Long getId() {
 		return id;
@@ -119,5 +137,13 @@ public class User {
 
 	public void setUserImage(byte[] userImage) {
 		this.userImage = userImage;
+	}
+
+	public Boolean getPaid() {
+		return paid;
+	}
+
+	public void setPaid(Boolean paid) {
+		this.paid = paid;
 	}
 }

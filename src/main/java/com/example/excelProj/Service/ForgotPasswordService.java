@@ -121,36 +121,10 @@ public class ForgotPasswordService {
 
         Map<String,Object> map = new HashMap<>();
         map.put("company",company);
-        map.put("text","link to reset your password is : http://localhost:4200/#/resetlink/" + token);
+        map.put("text","link to reset your password is : https://workboard.ca/gigstertimesheet/#/resetlink/" + token);
         messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.DYNAMIC_EMAIL.getPath(),map));
         notificationService.sendEmail(messageDto);
 
-    }
-
-    public String getAlphaNumericString(int n) {
-
-        // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz";
-
-        // create StringBuffer size of AlphaNumericString
-        StringBuilder sb = new StringBuilder(n);
-
-        for (int i = 0; i < n; i++) {
-
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int) (AlphaNumericString.length()
-                    * Math.random());
-
-            // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
-        }
-
-        return sb.toString();
     }
 
     public String generateUUID() {
@@ -184,4 +158,30 @@ public class ForgotPasswordService {
         return diffMinutes;
     }
 
+
+    public String getAlphaNumericString(int n) {
+
+        // chose a Character random from this String
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "0123456789"
+                + "abcdefghijklmnopqrstuvxyz";
+
+        // create StringBuffer size of AlphaNumericString
+        StringBuilder sb = new StringBuilder(n);
+
+        for (int i = 0; i < n; i++) {
+
+            // generate a random number between
+            // 0 to AlphaNumericString variable length
+            int index
+                    = (int) (AlphaNumericString.length()
+                    * Math.random());
+
+            // add Character one by one in end of sb
+            sb.append(AlphaNumericString
+                    .charAt(index));
+        }
+
+        return sb.toString();
+    }
 }

@@ -40,8 +40,61 @@ public class TimesheetsDTO {
     private String friExtraHrs;
     private String satExtraHrs;
     private String sunExtraHrs;
+    private String monBreakTime;
+    private String tueBreakTime;
+    private String wedBreakTime;
+    private String thursBreakTime;
+    private String friBreakTime;
+    private String satBreakTime;
+    private String sunBreakTime;
 
     public TimesheetsDTO() {
+    }
+
+    public TimesheetsDTO(Long weekId, String mondayStartTime, String mondayEndTime, String tuesdayStartTime, String tuesdayEndTime, String wednesdayStartTime, String wednesdayEndTime, String thursdayStartTime, String thursdayEndTime, String fridayStartTime, String fridayEndTime, String saturdayStartTime, String saturdayEndTime, String sundayStartTime, String sundayEndTime, String status, User user, User supervisor, String dateSubmitted, String sendFlag, String comments, String monTotalHrs, String tueTotalHrs, String wedTotalHrs, String thursTotalHrs, String friTotalHrs, String satTotalHrs, String sunTotalHrs, String totalHrs, String monExtraHrs, String tueExtraHrs, String wedExtraHrs, String thursExtraHrs, String friExtraHrs, String satExtraHrs, String sunExtraHrs, String monBreakTime, String tueBreakTime, String wedBreakTime, String thursBreakTime, String friBreakTime, String satBreakTime, String sunBreakTime) {
+        this.weekId = weekId;
+        this.mondayStartTime = mondayStartTime;
+        this.mondayEndTime = mondayEndTime;
+        this.tuesdayStartTime = tuesdayStartTime;
+        this.tuesdayEndTime = tuesdayEndTime;
+        this.wednesdayStartTime = wednesdayStartTime;
+        this.wednesdayEndTime = wednesdayEndTime;
+        this.thursdayStartTime = thursdayStartTime;
+        this.thursdayEndTime = thursdayEndTime;
+        this.fridayStartTime = fridayStartTime;
+        this.fridayEndTime = fridayEndTime;
+        this.saturdayStartTime = saturdayStartTime;
+        this.saturdayEndTime = saturdayEndTime;
+        this.sundayStartTime = sundayStartTime;
+        this.sundayEndTime = sundayEndTime;
+        this.status = status;
+        this.user = user;
+        this.supervisor = supervisor;
+        this.dateSubmitted = dateSubmitted;
+        this.sendFlag = sendFlag;
+        this.comments = comments;
+        this.monTotalHrs = monTotalHrs;
+        this.tueTotalHrs = tueTotalHrs;
+        this.wedTotalHrs = wedTotalHrs;
+        this.thursTotalHrs = thursTotalHrs;
+        this.friTotalHrs = friTotalHrs;
+        this.satTotalHrs = satTotalHrs;
+        this.sunTotalHrs = sunTotalHrs;
+        this.totalHrs = totalHrs;
+        this.monExtraHrs = monExtraHrs;
+        this.tueExtraHrs = tueExtraHrs;
+        this.wedExtraHrs = wedExtraHrs;
+        this.thursExtraHrs = thursExtraHrs;
+        this.friExtraHrs = friExtraHrs;
+        this.satExtraHrs = satExtraHrs;
+        this.sunExtraHrs = sunExtraHrs;
+        this.monBreakTime = monBreakTime;
+        this.tueBreakTime = tueBreakTime;
+        this.wedBreakTime = wedBreakTime;
+        this.thursBreakTime = thursBreakTime;
+        this.friBreakTime = friBreakTime;
+        this.satBreakTime = satBreakTime;
+        this.sunBreakTime = sunBreakTime;
     }
 
     public Long getWeekId() {
@@ -330,5 +383,61 @@ public class TimesheetsDTO {
 
     public void setSunExtraHrs(String sunExtraHrs) {
         this.sunExtraHrs = sunExtraHrs;
+    }
+
+    public String getMonBreakTime() {
+        return monBreakTime;
+    }
+
+    public void setMonBreakTime(String monBreakTime) {
+        this.monBreakTime = monBreakTime;
+    }
+
+    public String getTueBreakTime() {
+        return tueBreakTime;
+    }
+
+    public void setTueBreakTime(String tueBreakTime) {
+        this.tueBreakTime = tueBreakTime;
+    }
+
+    public String getWedBreakTime() {
+        return wedBreakTime;
+    }
+
+    public void setWedBreakTime(String wedBreakTime) {
+        this.wedBreakTime = wedBreakTime;
+    }
+
+    public String getThursBreakTime() {
+        return thursBreakTime;
+    }
+
+    public void setThursBreakTime(String thursBreakTime) {
+        this.thursBreakTime = thursBreakTime;
+    }
+
+    public String getFriBreakTime() {
+        return friBreakTime;
+    }
+
+    public void setFriBreakTime(String friBreakTime) {
+        this.friBreakTime = friBreakTime;
+    }
+
+    public String getSatBreakTime() {
+        return satBreakTime;
+    }
+
+    public void setSatBreakTime(String satBreakTime) {
+        this.satBreakTime = satBreakTime;
+    }
+
+    public String getSunBreakTime() {
+        return sunBreakTime;
+    }
+
+    public void setSunBreakTime(String sunBreakTime) {
+        this.sunBreakTime = sunBreakTime;
     }
 }

@@ -51,7 +51,7 @@ public class AuthenticationController {
         if(user!=null){
             final String token = jwtTokenUtil.generateToken(user);
 
-            return new ApiResponse<>(200, "success",new AuthToken(user.getId(),token,user.getName(),user.getUserType(),user.getEmail(),user.getOrganizationName(),user.getUserImage()));
+            return new ApiResponse<>(200, "success",new AuthToken(user.getId(),token,user.getName(),user.getUserType(),user.getEmail(),user.getOrganizationName(),user.getUserImage(),user.getPaid()));
         }
 
       return new ApiResponse<>(404, "RECORD NOT FOUND",new AuthToken("","","",""));

@@ -4,9 +4,13 @@ import com.example.excelProj.Commons.ApiResponse;
 import com.example.excelProj.Dto.TimesheetsDTO;
 import com.example.excelProj.Model.Timesheets;
 import com.example.excelProj.Service.TimesheetsService;
+import com.itextpdf.text.pdf.codec.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.sql.Time;
 
 @RestController
@@ -47,6 +51,11 @@ public class TimesheetsController {
         return timesheetsService.modifyStatusOnly(id,changeStatus);
     }
 
+    @GetMapping("/addcomment/{comment}/{id}")
+    public ApiResponse<Time> modifyStatusAndCommentOnly(@PathVariable("id") Long id,@PathVariable("comment") String comment) {
+        return timesheetsService.disapproveAndAddComment(id,comment);
+    }
+
     @GetMapping("/{id}")
     public ApiResponse getById(@PathVariable("id") Long id){
         return timesheetsService.getById(id);
@@ -67,5 +76,15 @@ public class TimesheetsController {
     public ApiResponse getApprovedTimesheets(@PathVariable("id") Long id){
         return timesheetsService.getApprovedTimesheets(id);
     }
+
+
+    @GetMapping("/downloadpdf/{IsAll}/{id}")
+    public ResponseEntity<InputStreamResource> getPDFForTimesheet(@PathVariable("id") Long id,@PathVariable("IsAll") String isAll) throws IOException {
+        return timesheetsService.getPDFForTimesheet(id,isAll);
+    }
+
+
+
+
 
 }

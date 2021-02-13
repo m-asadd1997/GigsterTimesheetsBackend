@@ -9,20 +9,26 @@ import com.example.excelProj.Model.User;
 import com.example.excelProj.Repository.TimesheetsRepository;
 import com.example.excelProj.Repository.UserDaoRepository;
 import com.example.excelProj.Service.impl.NotificationService;
+import com.example.excelProj.util.TimesheetPdfUtil;
 import com.example.excelProj.util.Util;
+import com.itextpdf.text.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.Authentication;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.sql.Time;
+import java.util.*;
 
 @Service
 public class TimesheetsService {
@@ -82,6 +88,13 @@ public class TimesheetsService {
         timesheets.setFriExtraHrs(timesheetsDTO.getFriExtraHrs());
         timesheets.setSatExtraHrs(timesheetsDTO.getSatExtraHrs());
         timesheets.setSunExtraHrs(timesheetsDTO.getSunExtraHrs());
+        timesheets.setMonBreakTime(timesheetsDTO.getMonBreakTime());
+        timesheets.setTueBreakTime(timesheetsDTO.getTueBreakTime());
+        timesheets.setWedBreakTime(timesheetsDTO.getWedBreakTime());
+        timesheets.setThursBreakTime(timesheetsDTO.getThursBreakTime());
+        timesheets.setFriBreakTime(timesheetsDTO.getFriBreakTime());
+        timesheets.setSatBreakTime(timesheetsDTO.getSatBreakTime());
+        timesheets.setSunBreakTime(timesheetsDTO.getSunBreakTime());
         timesheets.setSendFlag("NO");
         return new ApiResponse(HttpStatus.OK.value(), "Timesheet saved successfully.",timesheetsRepository.save(timesheets));
 
@@ -178,6 +191,13 @@ public class TimesheetsService {
             timesheets.setFriExtraHrs(timesheetsDTO.getFriExtraHrs());
             timesheets.setSatExtraHrs(timesheetsDTO.getSatExtraHrs());
             timesheets.setSunExtraHrs(timesheetsDTO.getSunExtraHrs());
+            timesheets.setMonBreakTime(timesheetsDTO.getMonBreakTime());
+            timesheets.setTueBreakTime(timesheetsDTO.getTueBreakTime());
+            timesheets.setWedBreakTime(timesheetsDTO.getWedBreakTime());
+            timesheets.setThursBreakTime(timesheetsDTO.getThursBreakTime());
+            timesheets.setFriBreakTime(timesheetsDTO.getFriBreakTime());
+            timesheets.setSatBreakTime(timesheetsDTO.getSatBreakTime());
+            timesheets.setSunBreakTime(timesheetsDTO.getSunBreakTime());
             if(timesheetsDTO.getStatus().equals("Approved")){
                 sendEmailToSupervisorWithData(timesheets);
                 sendEmailToEmployee(timesheets);
@@ -222,6 +242,20 @@ public class TimesheetsService {
         }
     }
 
+    public ApiResponse disapproveAndAddComment(Long id,String comment){
+        Optional<Timesheets> timesheets1 = timesheetsRepository.findById(id);
+        if(timesheets1.isPresent()){
+            Timesheets timesheets = timesheets1.get();
+            timesheets.setStatus("Disapproved");
+            timesheets.setComments(comment);
+            sendEmailToEmployee(timesheets);
+            return  new ApiResponse((HttpStatus.OK.value()), "Status modified successfully.",timesheetsRepository.save(timesheets));
+        }
+        else{
+            return  new ApiResponse((HttpStatus.NOT_FOUND.value()), "Error Modifying Status.",null);
+        }
+    }
+
     public  ApiResponse getById(Long id){
         Optional<Timesheets> timesheets = timesheetsRepository.findById(id);
             if (timesheets.isPresent()){
@@ -244,7 +278,7 @@ public class TimesheetsService {
         }
     }
 
-    void sendEmail(String recevierEmail) {
+    void sendEmail(String recevierEmail,String name) {
 
         /*SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(recevierEmail);
@@ -263,10 +297,14 @@ public class TimesheetsService {
         messageDto.setSubject("Timesheet Received");
 
         Map<String,Object> map = new HashMap<>();
-        map.put("company","");
+        map.put("company",name);
         map.put("text","Timesheet received for status update");
         messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.DYNAMIC_EMAIL.getPath(),map));
-        notificationService.sendEmail(messageDto);
+        try {
+            notificationService.sendEmail(messageDto);
+        }catch (Exception e){
+            System.out.println(e);
+        }
 
     }
 
@@ -292,7 +330,11 @@ public class TimesheetsService {
         map.put("company",timesheets.getUser().getOrganizationName());
         map.put("text","Timesheet for week no. : "+ timesheets.getWeekId() + " is " + timesheets.getStatus() + " by " +timesheets.getSupervisor().getName());
         messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.DYNAMIC_EMAIL.getPath(),map));
-        notificationService.sendEmail(messageDto);
+        try {
+            notificationService.sendEmail(messageDto);
+        }catch (Exception e){
+            System.out.println(e);
+        }
 
     }
 
@@ -318,6 +360,7 @@ public class TimesheetsService {
         }catch (Exception e){
             System.out.println(e);
         }*/
+
         MessageDto messageDto = new MessageDto();
         messageDto.setSendTo(timesheets.getUser().getEmail());
         messageDto.setSubject("Timesheet Summary Received");
@@ -336,42 +379,46 @@ public class TimesheetsService {
                 "Sunday Time : " +timesheets.getSunTotalHrs()+ "\n"+
                 "Total Hours : "+timesheets.getTotalHrs());
         messageDto.setTextBody(Util.populateMessageBodyByTemplate(EmailTemplate.DYNAMIC_EMAIL.getPath(),map));
-        notificationService.sendEmail(messageDto);
+        try {
+            notificationService.sendEmail(messageDto);
+        }catch (Exception e){
+            System.out.println(e);
+        }
 
     }
 
-    void sendEmailToEmployee(Timesheets timesheets) {
+//    void sendEmailToEmployee(Timesheets timesheets) {
+//
+//        SimpleMailMessage msg = new SimpleMailMessage();
+//        msg.setTo(timesheets.getUser().getEmail());
+//
+//
+//        msg.setSubject("Timesheet " + timesheets.getStatus());
+//        msg.setText("Timesheet for week no. : "+ timesheets.getWeekId() + " is " + timesheets.getStatus() + " by " +timesheets.getSupervisor().getName());
+//
+//        javaMailSender.send(msg);
+//
+//    }
 
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(timesheets.getUser().getEmail());
 
-
-        msg.setSubject("Timesheet " + timesheets.getStatus());
-        msg.setText("Timesheet for week no. : "+ timesheets.getWeekId() + " is " + timesheets.getStatus() + " by " +timesheets.getSupervisor().getName());
-
-        javaMailSender.send(msg);
-
-    }
-
-
-    void sendEmailToSupervisorWithData(Timesheets timesheets){
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(timesheets.getSupervisor().getEmail());
-
-        msg.setSubject("Timesheet Summary Received");
-        msg.setText("For Employee : " + timesheets.getUser().getName()+ "\n"+
-                        "Date Modified : " + timesheets.getDateSubmitted() +  "\n"+
-                        "Week No. :" + timesheets.getWeekId() + "\n"+
-                        "Monday Time : " +timesheets.getMonTotalHrs()+ "\n"+
-                        "Tuesday Time : " +timesheets.getTueTotalHrs()+ "\n"+
-                        "Wednesday Time : " +timesheets.getWedTotalHrs()+ "\n"+
-                        "Thursday Time : " +timesheets.getThursTotalHrs()+ "\n"+
-                        "Friday Time : " +timesheets.getFriTotalHrs()+ "\n"+
-                        "Saturday Time : " +timesheets.getSatTotalHrs()+ "\n"+
-                        "Sunday Time : " +timesheets.getSunTotalHrs()+ "\n"+
-                        "Total Hours : "+timesheets.getTotalHrs());
-                        javaMailSender.send(msg);
-    }
+//    void sendEmailToSupervisorWithData(Timesheets timesheets){
+//        SimpleMailMessage msg = new SimpleMailMessage();
+//        msg.setTo(timesheets.getSupervisor().getEmail());
+//
+//        msg.setSubject("Timesheet Summary Received");
+//        msg.setText("For Employee : " + timesheets.getUser().getName()+ "\n"+
+//                        "Date Modified : " + timesheets.getDateSubmitted() +  "\n"+
+//                        "Week No. :" + timesheets.getWeekId() + "\n"+
+//                        "Monday Time : " +timesheets.getMonTotalHrs()+ "\n"+
+//                        "Tuesday Time : " +timesheets.getTueTotalHrs()+ "\n"+
+//                        "Wednesday Time : " +timesheets.getWedTotalHrs()+ "\n"+
+//                        "Thursday Time : " +timesheets.getThursTotalHrs()+ "\n"+
+//                        "Friday Time : " +timesheets.getFriTotalHrs()+ "\n"+
+//                        "Saturday Time : " +timesheets.getSatTotalHrs()+ "\n"+
+//                        "Sunday Time : " +timesheets.getSunTotalHrs()+ "\n"+
+//                        "Total Hours : "+timesheets.getTotalHrs());
+//                        javaMailSender.send(msg);
+//    }
 
     public ApiResponse sendTimesheetToSupervisor(Long id, TimesheetsDTO timesheetsDTO){
         Optional<Timesheets> timesheets1 = timesheetsRepository.findById(id);
@@ -382,7 +429,7 @@ public class TimesheetsService {
             timesheets.setSupervisor(timesheetsDTO.getSupervisor());
             timesheets.setStatus(timesheetsDTO.getStatus());
             timesheets.setDateSubmitted(timesheetsDTO.getDateSubmitted());
-            sendEmail(timesheetsDTO.getSupervisor().getEmail());
+            sendEmail(timesheetsDTO.getSupervisor().getEmail(),timesheetsDTO.getSupervisor().getName());
 
 
             return new ApiResponse((HttpStatus.OK.value()), "Timesheet send successfully.", timesheetsRepository.save(timesheets));
@@ -393,5 +440,46 @@ public class TimesheetsService {
 
         }
     }
+
+    public ResponseEntity<InputStreamResource> getPDFForTimesheet(Long id,String isAll) throws IOException {
+
+
+            List<Timesheets> timesheetsList = new ArrayList<>();
+            Timesheets timesheet = new Timesheets();
+            if(isAll.equals("no")) {
+                timesheet = timesheetsRepository.findById(id).get();
+                Resource file = new UrlResource(TimesheetPdfUtil.timesheetPdfFile(timesheet, timesheetsList).toURI());
+                return ResponseEntity
+                        .ok()
+                        .contentLength(file.contentLength())
+                        .contentType(
+                                MediaType.parseMediaType("application/pdf"))
+                        .body(new InputStreamResource(file.getInputStream()));
+            }
+            else if(isAll.equals("yescurrent")){
+                timesheetsList = timesheetsRepository.getTimeSheetsForLoggedinSupervisor(id);
+                Resource file = new UrlResource(TimesheetPdfUtil.timesheetPdfFile(timesheet, timesheetsList).toURI());
+                return ResponseEntity
+                        .ok()
+                        .contentLength(file.contentLength())
+                        .contentType(
+                                MediaType.parseMediaType("application/pdf"))
+                        .body(new InputStreamResource(file.getInputStream()));
+            }
+            else if(isAll.equals("yesprev")){
+                timesheetsList = timesheetsRepository.getApprovedTimesheets(id);
+                Resource file = new UrlResource(TimesheetPdfUtil.timesheetPdfFile(timesheet, timesheetsList).toURI());
+                return ResponseEntity
+                        .ok()
+                        .contentLength(file.contentLength())
+                        .contentType(
+                                MediaType.parseMediaType("application/pdf"))
+                        .body(new InputStreamResource(file.getInputStream()));
+            }
+           return null;
+
+    }
+
+
 
 }

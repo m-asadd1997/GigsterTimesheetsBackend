@@ -9,6 +9,7 @@ public class AuthToken {
     private  String email;
     private String organizationName;
     private byte[] userImage;
+    private Boolean paid;
 
     public AuthToken(String token, String username, String userType) {
         this.token = token;
@@ -40,7 +41,7 @@ public class AuthToken {
         this.organizationName = organizationName;
     }
 
-    public AuthToken(Long id, String token, String username, String userType, String email, String organizationName, byte[] userImage) {
+    public AuthToken(Long id, String token, String username, String userType, String email, String organizationName, byte[] userImage, Boolean paid) {
         this.id = id;
         this.token = token;
         this.username = username;
@@ -48,6 +49,7 @@ public class AuthToken {
         this.email = email;
         this.organizationName = organizationName;
         this.userImage = userImage;
+        this.paid = paid;
     }
 
     public AuthToken(){
@@ -112,5 +114,13 @@ public class AuthToken {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Boolean getPaid() {
+        return paid;
+    }
+
+    public void setPaid(Boolean paid) {
+        this.paid = paid;
     }
 }
